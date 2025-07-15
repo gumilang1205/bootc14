@@ -23,8 +23,8 @@ namespace CobaArray
             {
                 for (int j = 0; j < kol; j++)
                 {
-                    Console.WriteLine($"isi [{bar} , {kol}]");
-                    data[i, j] = int.Parse(Console.ReadLine());
+                    Console.WriteLine($"baris ke {i} kolom ke {j}");
+                    data[i,j] = int.Parse(Console.ReadLine());
                 }
 
             }
@@ -36,8 +36,7 @@ namespace CobaArray
             {
                 for (int j = 0; j < kol; j++)
                 {
-                    Console.WriteLine("matrix");
-                    Console.WriteLine(data[i, j]);
+                    Console.WriteLine($"matriks");
                 }
             }
         }
