@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TugasPertama", "TugasPertama\TugasPertama.csproj", "{1FC46ADD-CC44-4856-B1B1-23EACB65DFF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericTypes", "NumericTypes\NumericTypes.csproj", "{8A5DE842-57FA-4B15-B867-08FDD69F1442}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{1FC46ADD-CC44-4856-B1B1-23EACB65DFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FC46ADD-CC44-4856-B1B1-23EACB65DFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FC46ADD-CC44-4856-B1B1-23EACB65DFF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A5DE842-57FA-4B15-B867-08FDD69F1442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A5DE842-57FA-4B15-B867-08FDD69F1442}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A5DE842-57FA-4B15-B867-08FDD69F1442}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A5DE842-57FA-4B15-B867-08FDD69F1442}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
