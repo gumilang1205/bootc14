@@ -12,7 +12,7 @@ Console.WriteLine(c);*/
 /*int a = int.MaxValue;
 a++;
 Console.WriteLine(a == int.MinValue);*/
-using System.Security.Cryptography.X509Certificates;
+using System;
 
 class OverFlowCheck
 {
@@ -24,17 +24,15 @@ class OverFlowCheck
         int y = 1000000;
         double o = 1000000;
         double p = 1000000;
-        double q = checked(o * p);
-        int z = unchecked(a * b);
-           
-            Console.WriteLine($"Hasil perkalian (checked) o*p adalah {q}");
-            Console.WriteLine($"hasil perkalian (unchecked) : {z}");
+        
         try
         {
-             int c = checked(a * b);
+            double q = checked(o * p);
+            int z = unchecked(a * b);
+            Console.WriteLine($"Hasil perkalian (checked) o*p adalah {q}");
+            Console.WriteLine($"hasil perkalian (unchecked) : {z}");
+            int c = checked(a * b);
             Console.WriteLine($"hasil perkalian (checked) : {c}");
-
-
         }
         catch (OverflowException e)
         {
