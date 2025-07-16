@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Security.Cryptography.X509Certificates;
 namespace Classes
 {
     class Program
@@ -20,6 +21,13 @@ namespace Classes
             s.CityCar();
             s.Informasi();
 
+            Kotak j = new Kotak(8, 9);
+            Console.WriteLine($"luas kotak {j.Luas()}");
+
+            Segitiga l = new Segitiga();
+            l.Alas = 6;
+            l.Tinggi = 9;
+            Console.WriteLine($"Luas Segitiga {l.Alas} * {l.Tinggi} = " + l.Luas());
         }
     }
     
