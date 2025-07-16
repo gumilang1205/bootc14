@@ -30,5 +30,5 @@ namespace Classes
             Console.WriteLine($"Luas Segitiga {l.Alas} * {l.Tinggi} = " + l.Luas());
         }
     }
-    
+
 }
