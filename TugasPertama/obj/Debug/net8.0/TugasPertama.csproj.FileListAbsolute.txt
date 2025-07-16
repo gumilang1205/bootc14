@@ -1,0 +1,15 @@
+C:\Users\SE-97\Documents\bootc14\TugasPertama\bin\Debug\net8.0\TugasPertama.exe
+C:\Users\SE-97\Documents\bootc14\TugasPertama\bin\Debug\net8.0\TugasPertama.deps.json
+C:\Users\SE-97\Documents\bootc14\TugasPertama\bin\Debug\net8.0\TugasPertama.runtimeconfig.json
+C:\Users\SE-97\Documents\bootc14\TugasPertama\bin\Debug\net8.0\TugasPertama.dll
+C:\Users\SE-97\Documents\bootc14\TugasPertama\bin\Debug\net8.0\TugasPertama.pdb
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.AssemblyInfoInputs.cache
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.AssemblyInfo.cs
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.csproj.CoreCompileInputs.cache
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.sourcelink.json
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.dll
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\refint\TugasPertama.dll
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.pdb
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\TugasPertama.genruntimeconfig.cache
+C:\Users\SE-97\Documents\bootc14\TugasPertama\obj\Debug\net8.0\ref\TugasPertama.dll
