@@ -22,14 +22,14 @@ class OverFlowCheck
         int b = 1000000;
         int x = 1000000;
         int y = 1000000;
-        double o = 1000000;
-        double p = 1000000;
+        double k = 1000000;
+        double l = 1000000;
         
         try
         {
-            double q = checked(o * p);
+            double m = checked(k * l);
             int z = unchecked(a * b);
-            Console.WriteLine($"Hasil perkalian (checked) o*p adalah {q}");
+            Console.WriteLine($"Hasil perkalian (checked) o*p adalah {m}");
             Console.WriteLine($"hasil perkalian (unchecked) : {z}");
             int c = checked(a * b);
             Console.WriteLine($"hasil perkalian (checked) : {c}");
