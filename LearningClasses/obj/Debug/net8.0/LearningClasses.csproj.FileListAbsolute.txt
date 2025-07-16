@@ -1,0 +1,15 @@
+C:\Users\SE-97\Documents\bootc14\LearningClasses\bin\Debug\net8.0\LearningClasses.exe
+C:\Users\SE-97\Documents\bootc14\LearningClasses\bin\Debug\net8.0\LearningClasses.deps.json
+C:\Users\SE-97\Documents\bootc14\LearningClasses\bin\Debug\net8.0\LearningClasses.runtimeconfig.json
+C:\Users\SE-97\Documents\bootc14\LearningClasses\bin\Debug\net8.0\LearningClasses.dll
+C:\Users\SE-97\Documents\bootc14\LearningClasses\bin\Debug\net8.0\LearningClasses.pdb
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.AssemblyInfoInputs.cache
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.AssemblyInfo.cs
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.csproj.CoreCompileInputs.cache
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.sourcelink.json
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.dll
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\refint\LearningClasses.dll
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.pdb
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\LearningClasses.genruntimeconfig.cache
+C:\Users\SE-97\Documents\bootc14\LearningClasses\obj\Debug\net8.0\ref\LearningClasses.dll
