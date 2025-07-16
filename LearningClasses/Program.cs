@@ -2,33 +2,25 @@
 using System;
 namespace Classes
 {
-    public class Car
+    class Program
     {
-        public string Merk;
-        public string Ukuran;
-        public int Kecepatan;
-        public Car(string merk, string ukuran, int kecepatan)
+        static void Main(string[] args)
         {
-             Merk = merk;
-             Ukuran = ukuran;
-             Kecepatan = kecepatan;
-        }
-        void CityCar()
-        {
-            Console.WriteLine($"ukuran mobil city car {Ukuran} dan kecepatan maksimal {Kecepatan} km/jam");
-        }
-        void Informasi()
-        {
-            Console.WriteLine($"mobil ini adalah buatan {Merk} ukuran mobil {Ukuran} dan kecepatannya {Kecepatan} km/jam");
-        }
-
-        
-     static void Main(string[] args)
-        {
-            Car sedan = new Car("toyota", "sedang", 80);
+            Car sedan = new Car("toyota", "kecil", 80);
             sedan.CityCar();
             sedan.Informasi();
+            Console.WriteLine();
+
+            Car k = new Car("mitsubishi", "sedang", 100);
+            k.CityCar();
+            k.Informasi();
+            Console.WriteLine();
+
+            Car s = new Car("Ferrari", "sedang", 500);
+            s.CityCar();
+            s.Informasi();
 
         }
     }
+    
 }
