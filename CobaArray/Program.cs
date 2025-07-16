@@ -24,7 +24,7 @@ namespace CobaArray
                 for (int j = 0; j < kol; j++)
                 {
                     Console.WriteLine($"baris ke {i} kolom ke {j}");
-                    data[i,j] = int.Parse(Console.ReadLine());
+                    data[j,i] = int.Parse(Console.ReadLine());
                 }
 
             }
@@ -36,8 +36,9 @@ namespace CobaArray
             {
                 for (int j = 0; j < kol; j++)
                 {
-                    Console.WriteLine($"matriks");
+                    Console.Write($"|{data[i, j]}|\t");
                 }
+                Console.WriteLine();
             }
         }
     }
@@ -50,7 +51,7 @@ namespace CobaArray
             Console.Write("panjang kolom : ");
             int kolom = int.Parse(Console.ReadLine());
 
-            Matrix matrix1 = new Matrix(baris, kolom);
+            Matrix matrix1 = new Matrix(baris,kolom);
             matrix1.InputArray();
 
             Console.WriteLine("Hasil matrix");
