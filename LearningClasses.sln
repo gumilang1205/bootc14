@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHandler", "EventHandle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TugasKedua", "TugasKedua\TugasKedua.csproj", "{B185C966-56AB-499A-BFAA-C6F476FFAA3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkFundamental", "FrameworkFundamental\FrameworkFundamental.csproj", "{BB46D5E8-653A-42C7-9782-530559E8E8C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +68,9 @@ Global
 		{B185C966-56AB-499A-BFAA-C6F476FFAA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B185C966-56AB-499A-BFAA-C6F476FFAA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B185C966-56AB-499A-BFAA-C6F476FFAA3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB46D5E8-653A-42C7-9782-530559E8E8C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB46D5E8-653A-42C7-9782-530559E8E8C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB46D5E8-653A-42C7-9782-530559E8E8C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB46D5E8-653A-42C7-9782-530559E8E8C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
