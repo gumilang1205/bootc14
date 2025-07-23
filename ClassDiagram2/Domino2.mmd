@@ -1,0 +1,79 @@
+classDiagram
+class Game {
+    -players: List<Player>
+    -board: Board
+    -currentPlayerIndex: int // Index of the current player in the players list
+    -turnDirection: int // 1 for clockwise, -1 for counter-clockwise
+    -random: Random // For shuffling and initial player
+    +Game(playerNames: List<String>)
+    +startGame(initialTilesPerPlayer: int): void
+    +playRound(): void // Main game loop for one round
+    +endGame(): void
+
+    // --- Internal Game Logic Methods (formerly in other classes or distributed) ---
+    -createAndShuffleAllDominos(): List<Domino>
+    -dealDominosToPlayers(allDominos: List<Domino>, initialTilesPerPlayer: int): void
+    -determineStartingPlayer(): void
+    -displayBoardState(): void
+    -displayPlayerHand(player: Player): void
+    -findPlayableDominoForPlayer(player: Player): Domino // Logic for finding playable domino
+    -attemptToPlaceDomino(player: Player, domino: Domino, end: String): boolean // Logic for placing domino
+    -moveNextTurn(): void
+    -checkWinCondition(): boolean
+    -handleGameStalemate(): void // Logic for when no one can play
+    -calculatePlayerScore(player: Player): int // Calculate score based on hand
+}
+
+class Player {
+    -name: String
+    -hand: Hand
+    -score: int
+    +Player(name: String)
+    +getName(): String
+    +getHand(): Hand
+    +getScore(): int
+    +addScore(points: int): void
+    // Note: No 'play' or 'hasPlayableDomino' methods here, logic moved to Game
+}
+
+class Domino {
+    -end1: int
+    -end2: int
+    +Domino(end1: int, end2: int)
+    +getEnd1(): int
+    +getEnd2(): int
+    +getOtherEnd(value: int): int
+    +isDouble(): boolean
+    +rotate(): void // Basic intrinsic behavior of a domino
+    +toString(): String
+    +equals(obj: Object): boolean
+    +getHashCode(): int
+}
+
+class Hand {
+    -dominoes: List<Domino>
+    +Hand()
+    +addDomino(domino: Domino): void
+    +removeDomino(domino: Domino): boolean
+    +getDominos(): List<Domino> // For Game to inspect
+    +isEmpty(): boolean
+    // Note: No 'calculateScore' or 'findPlayableDomino' here, logic moved to Game
+}
+
+class Board {
+    -playedDominos: List<Domino>
+    -leftEnd: int
+    -rightEnd: int
+    +Board()
+    +getLeftEnd(): int
+    +getRightEnd(): int
+    +getPlayedDominos(): List<Domino> // For Game to inspect
+    +isEmpty(): boolean
+    // Note: No 'placeDomino' method here, logic moved to Game
+}
+
+Game "1" -- "*" Player : manages
+Game "1" -- "1" Board : manages
+Player "1" -- "1" Hand : has
+Hand "1" -- "*" Domino : contains
+Board "1" -- "*" Domino : displays
