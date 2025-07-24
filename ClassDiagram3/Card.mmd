@@ -1,0 +1,88 @@
+classDiagram
+class IBoard {
+    +placeCard(card: Card, end: String): boolean
+    +getLeftEnd(): int
+    +getRightEnd(): int
+    +getPlayedCards(): List<Card> // Diperbaiki: getPlayedCards
+    +isEmpty(): boolean
+}
+
+class IPlayer {
+    +play(card: Card, board: IBoard, end: String): boolean
+    +getHand(): Hand
+    +getScore(): int
+    +addScore(points: int): void
+    +hasPlayableCard(board: IBoard): boolean
+}
+
+class Game {
+    -players: List<IPlayer> // Menggunakan IPlayer
+    -board: IBoard
+    -currentPlayer: IPlayer
+    +startGame(initialTilesPerPlayer: int): void :action
+    +endGame(): void
+    +nextTurn(): void
+    +playCard(player: IPlayer, card: Card, end: String): boolean
+    +checkWinCondition(): boolean
+    +determineStartingPlayer(): IPlayer
+    +isDoubleValue(): boolean // Asumsi mengembalikan boolean, jika sesuai dengan konsep "kartu ganda"
+    +rotateValue() : void // Tetap void, jika ini aksi pada kartu
+}
+
+class Player {
+    -name: String // Menggunakan -name: String (tanpa underscore awal jika tidak ada konvensi itu)
+    -hand: Hand
+    -score: int // Menggunakan -score: int
+    +Player(name: String)
+    +play(card: Card, board: IBoard, end: String): boolean
+    +getHand(): Hand
+    +getScore(): int
+    +addScore(points: int): void
+    +hasPlayableCard(board: IBoard): boolean
+}
+
+class Card {
+    -leftValue: int // Menggunakan -leftValue: int
+    -rightValue: int // Menggunakan -rightValue: int
+    +Card(end1: int, end2: int)
+    +getEnd1(): int
+    +getEnd2(): int
+    +getOtherEnd(value: int): int
+    +toString(): String
+    +rotate(): void // Tambahan metode rotate jika memang kartu bisa dirotasi seperti domino
+    +isDouble(): boolean // Tambahan metode isDouble jika memang kartu bisa ganda
+}
+
+class Hand {
+    -cards: List<Card> // Diperbaiki: _cards
+    +addCard(card: Card): void
+    +removeCard(card: Card): boolean
+    +getCards(): List<Card>
+    +isEmpty(): boolean
+    +calculateScore(): int
+    +findPlayableCard(board: IBoard): Card
+}
+
+class Board {
+    -playedCards: List<Card> // Menggunakan -playedCards: List<Card>
+    -leftEnd: int
+    -rightEnd: int
+    +placeCard(card: Card, end: String): boolean
+    +getLeftEnd(): int
+    +getRightEnd(): int
+    +getPlayedCards(): List<Card> // Diperbaiki: getPlayedCards
+    +isEmpty(): boolean
+}
+
+%%implementasi
+IBoard <|.. Board
+IPlayer <|.. Player
+
+%%assosiation
+Game "1" *-- "*" IPlayer : contains // Menggunakan IPlayer dan komposisi
+Game "1" *-- "1" IBoard : uses // Menggunakan IBoard dan komposisi
+Player "1" *-- "1" Hand : has // Menggunakan komposisi
+Hand "1" -- "*" Card : contains
+Board "1" -- "*" Card : displays
+
+Game ..> IPlayer : <<delegate>> playCard

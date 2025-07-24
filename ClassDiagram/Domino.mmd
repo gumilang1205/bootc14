@@ -1,55 +1,54 @@
 classDiagram
 class Game {
-    -players: List<Player>
-    -board: Board
-    -currentPlayer: Player
-    -firstPlayer: Player
+    -List<Player> _players
+    -board: IBoard
+    -currentPlayer: IPlayer
     +startGame(initialTilesPerPlayer: int): void :action
     +endGame(): void
     +nextTurn(): void
-    +playDomino(player: Player, domino: Domino, end: String): boolean
+    +playDomino(player: IPlayer, domino: Domino, end: String): boolean
     +checkWinCondition(): boolean
-    +determineStartingPlayer(): Player
+    +determineStartingPlayer(): IPlayer
+    +isDoubleValue(): void :boolean
+    +rotateValue() : void
 }
 
 class Player {
-    -name: String
+    -string _name
     -hand: Hand
-    -score: int
+    -int _score
     +Player(name: String)
-    +play(domino: Domino, board: Board, end: String): boolean
+    +play(domino: Domino, board: IBoard, end: String): boolean
     +getHand(): Hand
     +getScore(): int
     +addScore(points: int): void
-    +hasPlayableDomino(board: Board): boolean
+    +hasPlayableDomino(board: IBoard): boolean
 }
 
 class Domino {
-    -end1: int
-    -end2: int
+    -int _leftValue
+    -int _rightValue
     +Domino(end1: int, end2: int)
     +getEnd1(): int
     +getEnd2(): int
     +getOtherEnd(value: int): int
-    +isDouble(): boolean
     +toString(): String
-    +rotate(): void
 }
 
 class Hand {
-    -dominoes: List<Domino>
+    -List<Domino> _dominoes
     +addDomino(domino: Domino): void
     +removeDomino(domino: Domino): boolean
     +getDominoes(): List<Domino>
     +isEmpty(): boolean
     +calculateScore(): int
-    +findPlayableDomino(board: Board): Domino // New method to find a playable tile
+    +findPlayableDomino(board: IBoard): Domino // New method to find a playable tile
 }
 
 class Board {
-    -playedDominoes: List<Domino>
-    -leftEnd: int
-    -rightEnd: int
+    -List<Domino> _playedDominoes 
+    -int _leftEnd 
+    -int _rightEnd
     +placeDomino(domino: Domino, end: String): boolean
     +getLeftEnd(): int
     +getRightEnd(): int
@@ -57,7 +56,26 @@ class Board {
     +isEmpty(): boolean
 }
 
-
+class IBoard {
+    <<interface>>
+    +placeDomino(domino: Domino, end: String): boolean
+    +getLeftEnd(): int
+    +getRightEnd(): int
+    +getPlayedDominoes(): List<Domino>
+    +isEmpty(): boolean
+}
+class IPlayer {
+    <<interface>>
+    +play(domino: Domino, board: IBoard, end: String): boolean
+    +getHand(): Hand
+    +getScore(): int
+    +addScore(points: int): void
+    +hasPlayableDomino(board: IBoard): boolean
+}
+%%implementasi
+IBoard <|.. Board
+IPlayer <|.. Player
+%%assosiation
 Game "1" -- "*" Player : contains
 Game "1" -- "1" Board : uses
 Player "1" -- "1" Hand : has
