@@ -1,85 +1,95 @@
 classDiagram
 class Game {
-    -List<.Player> _players
-    -board: IBoard
-    -currentPlayer: IPlayer
-    +Action<.Player>
-    +Action<.Player,Card>
-    +StartGame(int initialTilesPerPlayer): void
-    +EndGame(): void
-    +NextTurn(): void
-    +PlayCard(IPlayer player , Card card , string potionCard): boolean
-    +CheckWinCondition(): boolean
-    +DetermineStartingPlayer(): IPlayer
-    +IsDoubleValue(): void :boolean
-    +RotateValue() : void
+    -List~IPlayer~ _players
+    -IBoard board 
+    -ICard card
+    +Action~ICard~ OnStart
+    +Action OnScore
+    +Game(List~IPlayer~ players)
+    +StartGame() void
+    +AddCard(ICard card) void
+    +IsDoubleValue() void : boolean
+    +DetermineStartingPlayer() IPlayer
+    +NextTurn() void
+    +HasPlayableCard(IBoard board) boolean
+    +FindPlayableCard(IBoard board) ICard
+    +PlayCard(IPlayer player , ICard card , string potionCard) boolean
+    +RotateValue()  void 
+    +PlaceCard(ICard card, string potionCard) boolean  
+    +RemoveCard(ICard card) boolean
+    +CheckWinCondition() boolean
+    +AddScore(int points) void
+    +CalculateScore() int
+    +EndGame() void
 }
 
 class Player {
     -string _name
-    -hand: Hand
+    -List~ICard~ _hand
     -int _score
     +Player(string name)
-    +Play(IPlayer player , Card domino , string potionCard): boolean
-    +GetHand(): Hand
-    +GetScore(): int
-    +AddScore(int points): void
-    +HasPlayableCard(IBoard board): boolean
+    +GetHand() List~ICard~
+    +GetScore() int
+    +IsEmpty() boolean
 }
 
 class Card {
-    -int _leftValue
-    -int _rightValue
-    +Card(int _leftValue , int _rightValue)
-    +Get _leftValue(): int
-    +Get _rightValu(): int
-    +GetOtherEnd(int value): int
-    +ToString(): string
+    -int _leftValueCard
+    -int _rightValueCard
+    +Card(int _leftValueCard , int _rightValueCard)
+    +GetLeftValue() int
+    +GetRightValue() int
+    +GetOtherValue(int value) int
+    +ToString() string
 }
 
-class Hand {
-    -List<.Card> _card
-    +AddCard(Card card): void
-    +RemoveCard(Card card): boolean
-    +GetCards(): List<Card>
-    +IsEmpty(): boolean
-    +CalculateScore(): int
-    +FindPlayableCard(IBoard board): Card // New method to find a playable tile
-}
+%% class Hand {
+%%     -List~ICard~ _card
+%%     +GetCards(): List~ICard~
+    
+%% }
 
 class Board {
-    -List<.Card> _playedDominoes 
-    -int _leftEnd 
-    -int _rightEnd
-    +PlaceCard(Card card, string potionCard): boolean
-    +GetLeftEnd(): int
-    +GetRightEnd(): int
-    +GetPlayedCards(): List<Card>
-    +IsEmpty(): boolean
+    -List~ICard~ _playedDominoes 
+    -int _leftValueBoard
+    -int _rightValueBoard
+    +GetLeftValue() int
+    +GetRightValue() int
+    +GetPlayedCards() List~ICard~
+    +IsEmpty() boolean
 }
 
 class IBoard {
     <<interface>>
-    +PlaceCard(Card card, string potionCard): boolean
-    +GetLeftEnd(): int
-    +GetRightEnd(): int
-    +GetPlayedCards(): List<Card>
-    +IsEmpty(): boolean
+    +GetLeftValue() int
+    +GetRightValue() int
+    +GetPlayedCards() List~ICard~
+    +IsEmpty() boolean
 }
 class IPlayer {
     <<interface>>
-    +Play(Card card , IBoard board , string potionCard): boolean
-    +GetHand(): Hand
-    +GetScore(): int
-    +AddScore(int points): void
-    +HasPlayableCard(IBoard board): boolean
+    +GetHand() List~ICard~
+    +GetScore() int
+}
+class ICard {
+    <<interface>>
+    +GetLeftValue() int
+    +GetRightValue() int
+    +GetOtherValue(int value) int
 }
 %%implementasi
-IBoard <|.. Board
-IPlayer <|.. Player
+Board <-- IBoard
+Player <-- IPlayer
+Card <-- ICard
 %%assosiation
-Game "1" -- "*" Player : contains
-Game "1" -- "1" Board : uses
-Player "1" -- "1" Hand : has
-Hand "1" -- "*" Card : contains
-Board "1" -- "*" Card : displays
+Game --* IPlayer
+Game --* IBoard
+Game --* ICard
+Board --* ICard
+IBoard --> ICard
+Player --*ICard
+%% Game "1" -- "*" IPlayer : contains
+%% Game "1" -- "1" Board : uses
+%% Player "1" -- "1" Hand : has
+%% Hand "1" -- "*" Card : contains
+%% Board "1" -- "*" Card : displays
