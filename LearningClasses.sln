@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectOrientationProgramming", "ObjectOrientationProgramming\ObjectOrientationProgramming.csproj", "{9899F833-2521-4EAE-A44B-61A3CD1E984A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs", "Tgs\Tgs.csproj", "{1E286CFC-B86C-4002-9069-38C743E72163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,5 +98,9 @@ Global
 		{9899F833-2521-4EAE-A44B-61A3CD1E984A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9899F833-2521-4EAE-A44B-61A3CD1E984A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9899F833-2521-4EAE-A44B-61A3CD1E984A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E286CFC-B86C-4002-9069-38C743E72163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E286CFC-B86C-4002-9069-38C743E72163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E286CFC-B86C-4002-9069-38C743E72163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E286CFC-B86C-4002-9069-38C743E72163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,18 +1,22 @@
 classDiagram
 class Game {
     -List~IPlayer~ _players
-    -IBoard board 
+    -IDiscardTiles discardTile 
     -ICard card
+    %% -List~ICard~ _hand
+    -Dictionary ~Player,Hand~
+    +GetHand() List~ICard~
     +Action~ICard~ OnStart
     +Action OnScore
     +Game(List~IPlayer~ players)
     +StartGame() void
     +AddCard(ICard card) void
     +IsDoubleValue() void : boolean
+    +IsEmpty() boolean
     +DetermineStartingPlayer() IPlayer
     +NextTurn() void
-    +HasPlayableCard(IBoard board) boolean
-    +FindPlayableCard(IBoard board) ICard
+    +HasPlayableCard(IDiscardTiles discardTile) boolean
+    +FindPlayableCard(IDiscardTiles discardTile) ICard
     +PlayCard(IPlayer player , ICard card , string potionCard) boolean
     +RotateValue()  void 
     +PlaceCard(ICard card, string potionCard) boolean  
@@ -25,21 +29,18 @@ class Game {
 
 class Player {
     -string _name
-    -List~ICard~ _hand
     -int _score
     +Player(string name)
-    +GetHand() List~ICard~
     +GetScore() int
-    +IsEmpty() boolean
 }
 
 class Card {
     -int _leftValueCard
     -int _rightValueCard
     +Card(int _leftValueCard , int _rightValueCard)
-    +GetLeftValue() int
-    +GetRightValue() int
-    +GetOtherValue(int value) int
+    +GetLeftValueCard() int
+    +GetRightValueCard() int
+    +GetOtherValueCard(int value) int
     +ToString() string
 }
 
@@ -49,22 +50,21 @@ class Card {
     
 %% }
 
-class Board {
+class DiscardTile {
     -List~ICard~ _playedDominoes 
-    -int _leftValueBoard
-    -int _rightValueBoard
-    +GetLeftValue() int
-    +GetRightValue() int
+    -int _leftValueDiscardTile
+    -int _rightValueDiscardTile
+    +GetLeftValueDiscardTile() int
+    +GetRightValueDiscardTile() int
     +GetPlayedCards() List~ICard~
-    +IsEmpty() boolean
 }
 
-class IBoard {
+class IDiscardTile {
     <<interface>>
-    +GetLeftValue() int
-    +GetRightValue() int
+    +GetLeftValueDiscardTile() int
+    +GetRightValueDiscardTile() int
     +GetPlayedCards() List~ICard~
-    +IsEmpty() boolean
+
 }
 class IPlayer {
     <<interface>>
@@ -73,20 +73,20 @@ class IPlayer {
 }
 class ICard {
     <<interface>>
-    +GetLeftValue() int
-    +GetRightValue() int
-    +GetOtherValue(int value) int
+    +GetLeftValueCard() int
+    +GetRightValueCard() int
+    +GetOtherValueCard(int value) int
 }
 %%implementasi
-Board <-- IBoard
+DiscardTile <-- IDiscardTile
 Player <-- IPlayer
 Card <-- ICard
 %%assosiation
 Game --* IPlayer
-Game --* IBoard
+Game --* IDiscardTile
 Game --* ICard
-Board --* ICard
-IBoard --> ICard
+DiscardTile --* ICard
+IDiscardTile --> ICard
 Player --*ICard
 %% Game "1" -- "*" IPlayer : contains
 %% Game "1" -- "1" Board : uses
