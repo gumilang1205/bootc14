@@ -3,9 +3,7 @@ class Game {
     -List~IPlayer~ _players
     -IDiscardTiles discardTile 
     -ICard card
-    %% -List~ICard~ _hand
-    -Dictionary ~Player,Hand~
-    +GetHand() List~ICard~
+    -Dictionary <.IPlayer,List<.ICard>> _hand
     +Action~ICard~ OnStart
     +Action OnScore
     +Game(List~IPlayer~ players)
@@ -32,6 +30,8 @@ class Player {
     -int _score
     +Player(string name)
     +GetScore() int
+    +SetScore(int score) void
+    +SetName(string name) void
 }
 
 class Card {
@@ -39,7 +39,9 @@ class Card {
     -int _rightValueCard
     +Card(int _leftValueCard , int _rightValueCard)
     +GetLeftValueCard() int
+    +SetLeftValueCard(int value) void
     +GetRightValueCard() int
+    +SetRightValueCard(int value) void
     +GetOtherValueCard(int value) int
     +ToString() string
 }
@@ -55,26 +57,34 @@ class DiscardTile {
     -int _leftValueDiscardTile
     -int _rightValueDiscardTile
     +GetLeftValueDiscardTile() int
+    +SetLeftValueDiscardTile(int value) void
     +GetRightValueDiscardTile() int
+    +SetRightValueDiscardTile(int value) void
     +GetPlayedCards() List~ICard~
+    +SetPlayedCards(List~ICard~ card) void
 }
 
 class IDiscardTile {
     <<interface>>
     +GetLeftValueDiscardTile() int
+    +SetLeftValueDiscardTile(int value) void
     +GetRightValueDiscardTile() int
+    +SetRightValueDiscardTile(int value) void
     +GetPlayedCards() List~ICard~
+    +SetPlayedCards(List~ICard~ card) void
 
 }
 class IPlayer {
     <<interface>>
-    +GetHand() List~ICard~
     +GetScore() int
+    +SetScore(int score) void
 }
 class ICard {
     <<interface>>
     +GetLeftValueCard() int
+    +SetLeftValueCard(int value) void
     +GetRightValueCard() int
+    +SetRightValueCard(int value) void
     +GetOtherValueCard(int value) int
 }
 %%implementasi
@@ -82,11 +92,11 @@ DiscardTile <-- IDiscardTile
 Player <-- IPlayer
 Card <-- ICard
 %%assosiation
+DiscardTile --* ICard
+IDiscardTile --> ICard
 Game --* IPlayer
 Game --* IDiscardTile
 Game --* ICard
-DiscardTile --* ICard
-IDiscardTile --> ICard
 Player --*ICard
 %% Game "1" -- "*" IPlayer : contains
 %% Game "1" -- "1" Board : uses
