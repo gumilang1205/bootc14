@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public class Program
 {
@@ -20,14 +18,15 @@ public class Program
 
     public static void PrintUrutanAngkaTerbagi(int angka)
     {
-        var rules = new List<KeyValuePair<int, string>>
+        var rules = new Dictionary<int, string>();
         {
-            new KeyValuePair<int, string>(3, "foo"),
-            new KeyValuePair<int, string>(4, "baz"),
-            new KeyValuePair<int, string>(5, "bar"),
-            new KeyValuePair<int, string>(7, "jazz"),
-            new KeyValuePair<int, string>(9, "huzz")
-        };
+            rules.Add(3, "foo");
+            rules.Add(4, "baz");
+            rules.Add(5, "bar");
+            rules.Add(7, "jazz");
+            rules.Add(9, "huzz");
+        }
+        ;
 
         for (int i = 1; i <= angka; i++)
         {
