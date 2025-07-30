@@ -2,7 +2,7 @@ using Ludo.Enum;
 using Ludo.interfaceX;
 namespace Ludo.Game;
 
-public class Piece :
+public class Piece : IPiece
 
 {
     public Color PieceColor { get; }
@@ -11,9 +11,12 @@ public class Piece :
 
     public PieceState State { get; set; }
     public int StepIndex { get; set; }
+
+    Color IPiece.PieceColor => throw new NotImplementedException();
+
     public Piece(IPlayer ownerPlayer, Color pieceColor)
     {
         PieceColor = pieceColor;
-        PlayerOwner = PlayerOwner;
+        PlayerOwner = ownerPlayer;
     }
 }

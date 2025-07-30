@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContohLudo", "ContohLudo\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ludo", "Ludo\Ludo.csproj", "{01A5E60D-3EE9-47C3-B1AD-26BE15A57549}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisposalAndGarbageColection", "DisposalAndGarbageColection\DisposalAndGarbageColection.csproj", "{3892CBE1-70C1-4EA8-B814-DCE917906BAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +116,9 @@ Global
 		{01A5E60D-3EE9-47C3-B1AD-26BE15A57549}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01A5E60D-3EE9-47C3-B1AD-26BE15A57549}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01A5E60D-3EE9-47C3-B1AD-26BE15A57549}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3892CBE1-70C1-4EA8-B814-DCE917906BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3892CBE1-70C1-4EA8-B814-DCE917906BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3892CBE1-70C1-4EA8-B814-DCE917906BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3892CBE1-70C1-4EA8-B814-DCE917906BAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
