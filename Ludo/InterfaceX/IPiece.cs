@@ -5,7 +5,7 @@ namespace Ludo.interfaceX;
 
 public interface IPiece
 {
-    Color PieceColor { get; }
+    LudoColor PieceColor { get; }
     IPlayer PlayerOwner { get; }
     PieceState State { get; set; }
     int StepIndex { get; set; }

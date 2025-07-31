@@ -5,16 +5,16 @@ namespace Ludo.Game;
 public class Piece : IPiece
 
 {
-    public Color PieceColor { get; }
+    public LudoColor PieceColor { get; }
 
     public IPlayer PlayerOwner { get; }
 
     public PieceState State { get; set; }
     public int StepIndex { get; set; }
 
-    Color IPiece.PieceColor => throw new NotImplementedException();
+    LudoColor IPiece.PieceColor => throw new NotImplementedException();
 
-    public Piece(IPlayer ownerPlayer, Color pieceColor)
+    public Piece(IPlayer ownerPlayer, LudoColor pieceColor)
     {
         PieceColor = pieceColor;
         PlayerOwner = ownerPlayer;

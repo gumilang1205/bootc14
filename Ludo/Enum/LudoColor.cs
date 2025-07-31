@@ -1,9 +1,9 @@
 namespace Ludo.Enum;
 
-public enum Color
+public enum LudoColor
 {
-    Red,
-    Yellow,
-    Green,
-    Blue
+    RED,
+    YELLOW,
+    GREEN,
+    BLUE
 }
