@@ -1,13 +1,15 @@
-namespace Ludo.Enum;
-
-public enum ZoneType
+namespace Ludo.Enum
 {
-    Base,
-    StartPoint,
-    CommonPath,
-    HomePath,
-    HomePoint,
-    SafeZone,
-    BlockedPath,
-    Empty
+    public enum ZoneType
+    {
+        Base,
+        StartPoint,
+        CommonPath,
+        HomePath,
+        HomePoint,
+        SafeZone,
+        BlockedPath,
+        Empty
+    }
 }
+

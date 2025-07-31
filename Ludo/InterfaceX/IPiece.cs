@@ -1,13 +1,15 @@
-using System.Security;
 using Ludo.Enum;
 
-namespace Ludo.interfaceX;
-
-public interface IPiece
+namespace Ludo.interfaceX
 {
-    Color PieceColor { get; }
-    IPlayer PlayerOwner { get; }
-    PieceState State { get; set; }
-    int StepIndex { get; set; }
+    public interface IPiece
+    {
+        LudoColor PieceColor { get; }
+        IPlayer PlayerOwner { get; }
+        PieceState State { get; set; }
+        int StepIndex { get; set; }
+
+    }
 
 }
+

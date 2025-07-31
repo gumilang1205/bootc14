@@ -1,6 +1,8 @@
-namespace Ludo.interfaceX;
-
-public interface IDice
+namespace Ludo.interfaceX
 {
-    public int Roll();
+    public interface IDice
+    {
+        public int Roll();
+    }
 }
+

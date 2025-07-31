@@ -1,9 +1,10 @@
-namespace Ludo.Enum;
-
-public enum Color
+namespace Ludo.Enum
 {
-    Red,
-    Yellow,
-    Green,
-    Blue
+    public enum LudoColor
+    {
+        Red,
+        Yellow,
+        Green,
+        Blue
+    }
 }

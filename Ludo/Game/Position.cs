@@ -1,12 +1,13 @@
-namespace Ludo.interfaceX;
-
-public struct Position
+namespace Ludo.Game
 {
-    public int  X { get; set; }
-    public int Y { get; set; }
-    public Position(int x, int y)
+    public record struct Position
     {
-        X = x;
-        Y = y;
+        public int X { get; set; }
+        public int Y { get; set; }
+        public Position(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 }

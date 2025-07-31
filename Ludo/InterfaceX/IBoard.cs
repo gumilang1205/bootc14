@@ -1,6 +1,8 @@
-namespace Ludo.interfaceX;
-
-public interface IBoard
+namespace Ludo.interfaceX
 {
-    int[,] Grid { get; }
+    public interface IBoard
+    {
+        int[,] Grid { get; }
+    }
 }
+

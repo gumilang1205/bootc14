@@ -1,16 +1,18 @@
-using System.Drawing;
-using System.Dynamic;
-using System.Security.Cryptography.X509Certificates;
 
-namespace Ludo.interfaceX;
+using Ludo.Enum;
 
-public class Player : IPlayer
+namespace Ludo.interfaceX
 {
-    public string Name { get; set; }
-    public Color Color { get; set; }
-    public Player(string name, Color color)
+    public class Player : IPlayer
     {
-        Name = name;
-        Color = color;
+        public string Name { get; set; }
+        public LudoColor Color { get; set; }
+        public Player(string name, LudoColor color)
+        {
+            Name = name;
+            Color = color;
+        }
     }
+
 }
+
