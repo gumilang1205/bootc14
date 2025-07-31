@@ -5,6 +5,7 @@ using Ludo.interfaceX;
 
 namespace Ludo.Game
 {
+<<<<<<< HEAD
     public class GameController
     {
         private Dictionary<IPlayer, List<IPiece>> _playerPieces;
@@ -73,6 +74,23 @@ namespace Ludo.Game
         {
 
         }
+=======
+    private Dictionary<IPlayer, List<IPiece>> _playerPieces;
+    private Dictionary<LudoColor, List<Position>> _playerPaths;
+    private Dictionary<Position, ZoneType> _zoneMap;
+    private IDice _dice;
+    private List<IPlayer> _players;
+    private IBoard _board;
+    private int _currentTurnIndex;
+    public event Action OnGameStart;
+
+    public GameController(IPlayer p1, IPlayer p2, IPlayer p3, IPlayer p4)
+    {
+        _players.Add(p1);
+        _players.Add(p2);
+        _players.Add(p3);
+        _players.Add(p4);
+>>>>>>> a3ae4f7bbf94ed3deb635d66bd4ea83147229243
     }
 }
 
