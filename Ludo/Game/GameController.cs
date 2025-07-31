@@ -5,7 +5,6 @@ using Ludo.interfaceX;
 
 namespace Ludo.Game
 {
-<<<<<<< HEAD
     public class GameController
     {
         private Dictionary<IPlayer, List<IPiece>> _playerPieces;
@@ -60,37 +59,35 @@ namespace Ludo.Game
         }
         public ZoneType GetZoneTypePiece(IPiece piece)
         {
-            Version path = GetPathForPlayer(piece.PieceColor);
+            var path = GetPathForPlayer(piece.PieceColor);
+            if (piece.StepIndex >= 0 && piece.StepIndex < path.Count) ;
+            {
+                var position = path[piece.StepIndex];
+                return _zoneMap[position];
+            }
+            return ZoneType.Empty;
         }
         public bool CanMove(IPiece piece, int steps)
         {
             return piece.State != PieceState.Home;
         }
-        public bool MovePiece(IPiece piece, int steps, int maxsteps)
+        public bool MovePiece(IPiece piece, int steps, int maxSteps)
         {
-
+            if (!CanMove(piece, steps))
+                return false;
+            piece.StepIndex += steps;
+            if (piece.StepIndex >= maxSteps)
+            {
+                piece.State = PieceState.Home;
+                Console.WriteLine($"{piece.PlayerOwner.Name} bidaknya masuk Home!");
+            }
+            return true;
         }
-        public List<Position> GetPathForPalyer(LudoColor color)
+        public List<Position> GetPathForPlayer(LudoColor color)
         {
-
+            return _playerPaths[color];
         }
-=======
-    private Dictionary<IPlayer, List<IPiece>> _playerPieces;
-    private Dictionary<LudoColor, List<Position>> _playerPaths;
-    private Dictionary<Position, ZoneType> _zoneMap;
-    private IDice _dice;
-    private List<IPlayer> _players;
-    private IBoard _board;
-    private int _currentTurnIndex;
-    public event Action OnGameStart;
 
-    public GameController(IPlayer p1, IPlayer p2, IPlayer p3, IPlayer p4)
-    {
-        _players.Add(p1);
-        _players.Add(p2);
-        _players.Add(p3);
-        _players.Add(p4);
->>>>>>> a3ae4f7bbf94ed3deb635d66bd4ea83147229243
     }
 }
 
