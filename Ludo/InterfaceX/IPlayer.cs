@@ -1,9 +1,11 @@
 using Ludo.Enum;
 
-namespace Ludo.interfaceX;
-
-public interface IPlayer
+namespace Ludo.interfaceX
 {
-    public string Name { get; set; }
-    public LudoColor Color { get; set; }
+    public interface IPlayer
+    {
+        public string Name { get; set; }
+        public LudoColor Color { get; set; }
+    }
 }
+

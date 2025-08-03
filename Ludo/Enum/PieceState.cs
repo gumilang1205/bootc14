@@ -1,8 +1,10 @@
-namespace Ludo.Enum;
-
-public enum PieceState
+namespace Ludo.Enum
 {
-    AtBase,
-    Active,
-    Home
+    public enum PieceState
+    {
+        AtBase,
+        Active,
+        Home
+    }
 }
+

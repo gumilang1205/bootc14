@@ -1,16 +1,19 @@
 using Ludo.interfaceX;
 
-namespace Ludo.Game;
-
-public class Dice : IDice
+namespace Ludo.Game
 {
-    private Random _random;
-    public Dice()
+    public class Dice : IDice
     {
-        _random = new Random();
-    }
-    public int Roll()
-    {
-        return _random.Next(1, 7);
+        private Random _random;
+        public Dice()
+        {
+            _random = new Random();
+        }
+        public int Roll()
+        {
+            return _random.Next(1, 7);
+        }
     }
 }
+
+

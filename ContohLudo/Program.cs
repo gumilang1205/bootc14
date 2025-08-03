@@ -1,488 +1,594 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace LudoGame
+class Program
 {
-    // --- Supporting Types ---
-
-    /// <summary>
-    /// Represents a position on the game board.
-    /// </summary>
-    public record struct Position(int X, int Y);
-
-    /// <summary>
-    /// Represents the state of a game piece.
-    /// </summary>
-    public enum PieceState
+    static void Main(string[] args)
     {
-        AtBase,
-        Active,
-        Home
+        Player player1 = new Player("Andi", LudoColor.Red);
+        Player player2 = new Player("Bobi", LudoColor.Yellow);
+        Player player3 = new Player("Cica", LudoColor.Green);
+        Player player4 = new Player("Duda", LudoColor.Blue);
+
+        IDice dice = new Dice();
+        IBoard board = new Board();
+
+        GameController controller = new GameController(player1, player2, player3, player4, dice, board);
+        controller.OnGameStart += () => Console.WriteLine("Selamat bermain!!!");
+
+        controller.StartGame();
+
+
+
+
+    }
+}
+public class Board : IBoard
+{
+    public int[,] Grid { get; }
+    public Board()
+    {
+        Grid = new int[15, 15];
+
     }
 
-    /// <summary>
-    /// Represents different types of zones on the game board.
-    /// </summary>
-    public enum ZoneType
+}
+public class Dice : IDice
+{
+    private Random _random;
+    public Dice()
     {
-        Base,
-        StartPoint,
-        CommonPath,
-        HomePath,
-        HomePoint,
-        SafeZone,
-        BlockedPath, // Not explicitly used in logic but good to have
-        Empty
+        _random = new Random();
     }
-
-    /// <summary>
-    /// Represents the colors for players and pieces.
-    /// </summary>
-    public enum Color
+    public int Roll()
     {
-        BLUE,
-        RED,
-        GREEN,
-        YELLOW
+        return _random.Next(1, 7);
     }
+}
+public class Piece : IPiece
 
-    // --- IPlayer & Player ---
+{
+    public LudoColor PieceColor { get; }
+    public IPlayer PlayerOwner { get; }
+    public PieceState State { get; set; }
+    public int StepIndex { get; set; }
+    public int BaseIndex { get; set; }
 
-    /// <summary>
-    /// Interface for a game player.
-    /// </summary>
-    public interface IPlayer
+    public Piece(IPlayer ownerPlayer, LudoColor pieceColor)
     {
-        string Name { get; }
-        Color Color { get; }
+        PieceColor = pieceColor;
+        PlayerOwner = ownerPlayer;
+        State = PieceState.AtBase;
+        StepIndex = 0;
     }
-
-    /// <summary>
-    /// Represents a player in the game.
-    /// </summary>
-    public class Player : IPlayer
+}
+public class Player : IPlayer
+{
+    public string Name { get; set; }
+    public LudoColor Color { get; set; }
+    public Player(string name, LudoColor color)
     {
-        public string Name { get; }
-        public Color Color { get; }
+        Name = name;
+        Color = color;
+    }
+}
+public record struct Position
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+    public Position(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+}
+public interface IBoard
+{
+    int[,] Grid { get; }
+}
+public interface IDice
+{
+    public int Roll();
+}
+public interface IPiece
+{
+    LudoColor PieceColor { get; }
+    IPlayer PlayerOwner { get; }
+    PieceState State { get; set; }
+    int StepIndex { get; set; }
+    public int BaseIndex { get; set; }
 
-        public Player(string name, Color color)
+}
+public interface IPlayer
+{
+    public string Name { get; set; }
+    public LudoColor Color { get; set; }
+}
+public enum PieceState
+{
+    AtBase,
+    Active,
+    Home
+}
+public enum LudoColor
+{
+    Red,
+    Yellow,
+    Green,
+    Blue
+}
+public enum ZoneType
+{
+    Base,
+    StartPoint,
+    CommonPath,
+    HomePath,
+    HomePoint,
+    SafeZone,
+    BlockedPath,
+    Empty
+}
+public class GameController
+{
+    private Dictionary<IPlayer, List<IPiece>> _playerPieces;
+    private Dictionary<LudoColor, List<Position>> _playerPaths;
+    private Dictionary<Position, ZoneType> _zoneMap;
+    private Dictionary<LudoColor, List<Position>> _basePositions;
+    private IDice _dice;
+    private List<IPlayer> _players;
+    private IBoard _board;
+    private int _currentTurnIndex;
+    public event Action OnGameStart;
+
+    public GameController(IPlayer player1, IPlayer player2, IPlayer player3, IPlayer player4, IDice dice, IBoard board)
+    {
+        _players = new List<IPlayer>();
+        _players.Add(player1);
+        _players.Add(player2);
+        _players.Add(player3);
+        _players.Add(player4);
+
+        _dice = dice;
+        _board = board;
+
+
+        _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
+        _playerPaths = new Dictionary<LudoColor, List<Position>>();
+        _zoneMap = new Dictionary<Position, ZoneType>();
+        _basePositions = new Dictionary<LudoColor, List<Position>>
         {
-            Name = name;
-            Color = color;
-        }
-    }
-
-    // --- IPiece & Piece ---
-
-    /// <summary>
-    /// Interface for a game piece.
-    /// </summary>
-    public interface IPiece
-    {
-        Color PieceColor { get; }
-        IPlayer PlayerOwner { get; }
-        PieceState State { get; set; }
-        int StepIndex { get; set; } // Current step on the path, -1 for base/home
-    }
-
-    /// <summary>
-    /// Represents a game piece.
-    /// </summary>
-    public class Piece : IPiece
-    {
-        public Color PieceColor { get; }
-        public IPlayer PlayerOwner { get; }
-        public PieceState State { get; set; }
-        public int StepIndex { get; set; } // -1 indicates at base or home
-
-        public Piece(Color pieceColor, IPlayer playerOwner)
-        {
-            PieceColor = pieceColor;
-            PlayerOwner = playerOwner;
-            State = PieceState.AtBase;
-            StepIndex = -1; // Initially at base
-        }
-    }
-
-    // --- IDice & Dice ---
-
-    /// <summary>
-    /// Interface for a dice roller.
-    /// </summary>
-    public interface IDice
-    {
-        int Roll();
-    }
-
-    /// <summary>
-    /// Represents a dice for rolling numbers.
-    /// </summary>
-    public class Dice : IDice
-    {
-        private readonly Random _random;
-
-        public Dice()
-        {
-            _random = new Random();
-        }
-
-        public int Roll()
-        {
-            return _random.Next(1, 7); // Rolls a number between 1 and 6
-        }
-    }
-
-    // --- IBoard & Board ---
-
-    /// <summary>
-    /// Interface for the game board.
-    /// </summary>
-    public interface IBoard
-    {
-        Piece?[,] Grid { get; }
-    }
-
-    /// <summary>
-    /// Represents the game board.
-    /// </summary>
-    public class Board : IBoard
-    {
-        public Piece?[,] Grid { get; }
-
-        // A very simplified board representation.
-        // A real Ludo board would have specific paths and zones.
-        private const int BOARD_SIZE = 15; // Example size
-
-        public Board()
-        {
-            Grid = new Piece?[BOARD_SIZE, BOARD_SIZE];
-            // In a real Ludo game, you'd initialize specific positions for start, home, safe zones, etc.
-        }
-
-        // Example method to place a piece on the grid (for visualization, not game logic)
-        public void PlacePiece(Piece piece, Position position)
-        {
-            if (position.X >= 0 && position.X < BOARD_SIZE &&
-                position.Y >= 0 && position.Y < BOARD_SIZE)
+            [LudoColor.Red] = new List<Position>
             {
-                Grid[position.X, position.Y] = piece;
+                new Position(1,1), new Position(1,3), new Position(3,1), new Position(3,3)
+            },
+            [LudoColor.Yellow] = new List<Position>
+            {
+                new Position(11,1), new Position(11,3), new Position(13,1), new Position(13,3)
+            },
+            [LudoColor.Green] = new List<Position>
+            {
+                new Position(11,11), new Position(11,13), new Position(13,11), new Position(13,13)
+            },
+            [LudoColor.Blue] = new List<Position>
+            {
+                new Position(1,11), new Position(1,13), new Position(3,11), new Position(3,13)
             }
-        }
+        };
 
-        // Example method to remove a piece (e.g., when moving)
-        public void RemovePiece(Position position)
-        {
-            if (position.X >= 0 && position.X < BOARD_SIZE &&
-                position.Y >= 0 && position.Y < BOARD_SIZE)
-            {
-                Grid[position.X, position.Y] = null;
-            }
-        }
+
+        _currentTurnIndex = 0;
+        InitializePiece();
+        InitializePath();
+        InitializeZones();
+        DrawBoard();
     }
-
-    // --- GameController ---
-
-    /// <summary>
-    /// Manages the game flow and logic.
-    /// </summary>
-    public class GameController
+    public void DrawBoard()
     {
-        private readonly Dictionary<IPlayer, List<IPiece>> _playerPieces;
-        private readonly Dictionary<Color, List<Position>> _playerPaths;
-        private readonly Dictionary<Position, ZoneType> _zoneMap;
-        private readonly IDice _dice;
-        private readonly List<IPlayer> _players;
-        private readonly IBoard _board;
-        private int _currentTurnIndex;
+        char[,] display = new char[15, 15];
 
-        public event Action OnGameStart;
+        // isi default
+        for (int y = 0; y < 15; y++)
+            for (int x = 0; x < 15; x++)
+                display[x, y] = '.';
 
-        public GameController(IPlayer player1, IPlayer player2, IPlayer player3, IPlayer player4, IDice dice, IBoard board)
+        // Tampilkan bidak di jalur
+        foreach (var kvp in _playerPieces)
         {
-            _players = new List<IPlayer> { player1, player2, player3, player4 };
-            _dice = dice;
-            _board = board;
-            _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
-            _playerPaths = new Dictionary<Color, List<Position>>();
-            _zoneMap = new Dictionary<Position, ZoneType>();
+            var player = kvp.Key;
+            var pieces = kvp.Value;
 
-            InitializeGameComponents();
-        }
-
-        private void InitializeGameComponents()
-        {
-            // Initialize pieces for each player
-            foreach (var player in _players)
+            foreach (var piece in pieces)
             {
-                _playerPieces[player] = new List<IPiece>();
-                for (int i = 0; i < 4; i++) // Assuming 4 pieces per player
+                if (piece.State == PieceState.Active || piece.State == PieceState.Home)
                 {
-                    _playerPieces[player].Add(new Piece(player.Color, player));
-                }
-            }
-
-            // Initialize player paths (simplified for this example)
-            // In a real Ludo game, these paths would be complex and specific to the board layout.
-            // For demonstration, let's create a generic path.
-            foreach (Color color in Enum.GetValues(typeof(Color)))
-            {
-                _playerPaths[color] = new List<Position>();
-                // Example: A simple linear path for demonstration
-                for (int i = 0; i < 52; i++) // 52 steps in a typical Ludo common path
-                {
-                    _playerPaths[color].Add(new Position(i, 0)); // Dummy positions
-                }
-                // Add home path positions (e.g., last 6 steps before home point)
-                for (int i = 0; i < 6; i++)
-                {
-                    _playerPaths[color].Add(new Position(52 + i, 0)); // Dummy positions for home path
-                }
-                _playerPaths[color].Add(new Position(58, 0)); // Home point
-            }
-
-            // Initialize zone map (simplified)
-            // Map specific positions to their zone types (e.g., start points, safe zones, home paths)
-            // This would be highly dependent on your board design.
-            // For example: _zoneMap[new Position(0,0)] = ZoneType.StartPoint;
-            //             _zoneMap[new Position(10,0)] = ZoneType.SafeZone;
-        }
-
-        public void StartGame()
-        {
-            Console.WriteLine("Game Started!");
-            _currentTurnIndex = 0;
-            OnGameStart?.Invoke(); // Raise the game start event
-
-            // Example game loop (very basic for demonstration)
-            // In a real game, this would be part of a continuous game loop
-            // with user input and complex turn management.
-            for (int i = 0; i < 5; i++) // Simulate 5 turns
-            {
-                Console.WriteLine($"--- Turn {i + 1} ---");
-                IPlayer currentPlayer = GetCurrentPlayer();
-                Console.WriteLine($"It's {currentPlayer.Name}'s ({currentPlayer.Color}) turn.");
-
-                int roll = RollDice();
-                Console.WriteLine($"{currentPlayer.Name} rolled a {roll}.");
-
-                // Basic piece movement simulation
-                // In a real game, the player would choose which piece to move
-                // and a comprehensive check for valid moves would occur.
-                var movablePieces = _playerPieces[currentPlayer].Where(p => CanMove(p, roll)).ToList();
-
-                if (movablePieces.Any())
-                {
-                    Piece pieceToMove = (Piece)movablePieces.First(); // Just move the first movable piece
-                    Console.WriteLine($"Attempting to move {pieceToMove.PieceColor} piece. Current state: {pieceToMove.State}, Step: {pieceToMove.StepIndex}");
-
-                    // Example: Try to move a piece from base if 6 is rolled
-                    if (pieceToMove.State == PieceState.AtBase && roll == 6 && CanEnterFromBase(pieceToMove, roll))
+                    var path = GetPathForPlayer(piece.PieceColor);
+                    if (piece.StepIndex >= 0 && piece.StepIndex < path.Count)
                     {
-                        Console.WriteLine($"Piece {pieceToMove.PieceColor} can enter from base.");
-                        MovePiece(pieceToMove, -1, 0); // Move from base to start (StepIndex 0)
-                        Console.WriteLine($"Piece {pieceToMove.PieceColor} moved to active state at step 0.");
+                        var pos = path[piece.StepIndex];
+                        display[pos.X, pos.Y] = player.Name[0];
                     }
-                    else if (pieceToMove.State == PieceState.Active)
-                    {
-                        // Simulate moving an active piece
-                        int currentStep = pieceToMove.StepIndex;
-                        if (MovePiece(pieceToMove, currentStep, currentStep + roll))
-                        {
-                            Console.WriteLine($"Piece {pieceToMove.PieceColor} moved from step {currentStep} to {pieceToMove.StepIndex}.");
-                            CheckWin(currentPlayer);
-                            CaptureIfExists();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Piece {pieceToMove.PieceColor} cannot move {roll} steps.");
-                        }
-                    }
+                }
+            }
+        }
+
+        // Tampilkan bidak di Base
+        foreach (var kvp in _playerPieces)
+        {
+            var player = kvp.Key;
+            var pieces = kvp.Value.Where(p => p.State == PieceState.AtBase);
+
+            foreach (var piece in pieces)
+            {
+                var baseList = _basePositions[piece.PieceColor];
+                if (piece.BaseIndex >= 0 && piece.BaseIndex < baseList.Count)
+                {
+                    var pos = baseList[piece.BaseIndex];
+                    display[pos.X, pos.Y] = player.Name[0];
+                }
+            }
+        }
+
+        // Cetak grid
+        for (int y = 0; y < 15; y++)
+        {
+            for (int x = 0; x < 15; x++)
+            {
+                var zone = GetZoneType(x, y);
+                switch (zone)
+                {
+                    case ZoneType.Base: Console.ForegroundColor = ConsoleColor.DarkGray; break;
+                    case ZoneType.StartPoint: Console.ForegroundColor = ConsoleColor.White; break;
+                    case ZoneType.SafeZone: Console.ForegroundColor = ConsoleColor.Cyan; break;
+                    case ZoneType.HomePath: Console.ForegroundColor = ConsoleColor.Magenta; break;
+                    case ZoneType.HomePoint: Console.ForegroundColor = ConsoleColor.Yellow; break;
+                    default: Console.ForegroundColor = ConsoleColor.Gray; break;
+                }
+
+                Console.Write(display[x, y] + " ");
+            }
+            Console.WriteLine();
+        }
+        Console.ResetColor();
+    }
+    public void InitializePiece()
+    {
+        //untuk setiap pemain di _players
+        foreach (var player in _players)
+        {
+            //buat list bidak untuk pemain
+            var pieces = new List<IPiece>();
+            // setiap pemain memiliki 4 bidak
+            for (int i = 0; i < 4; i++)
+            {
+                var piece = new Piece(player, player.Color);
+                piece.State = PieceState.AtBase; //posisi awal di Base
+                piece.StepIndex = 0;
+                piece.BaseIndex = i;
+                pieces.Add(piece);
+            }
+            //masukan list bidak ke dictionary _playerPieces
+            _playerPieces[player] = pieces;
+
+        }
+    }
+    public void InitializePath()
+    {
+        //CommonPath = 52 langkah keliling papan
+        var commonPath = new List<Position>();
+        for (int i = 0; i < 52; i++)
+        {
+            commonPath.Add(new Position(i % 13, i / 13)); // simulasi koordinat
+        }
+
+        // HomePath = 6 langkah khusus untuk tiap warna
+        var redHome = new List<Position>();
+        var greenHome = new List<Position>();
+        var yellowHome = new List<Position>();
+        var blueHome = new List<Position>();
+
+        for (int i = 0; i < 6; i++)
+        {
+            redHome.Add(new Position(6 + i, 7));
+            greenHome.Add(new Position(7, 6 - i));
+            yellowHome.Add(new Position(8 - i, 7));
+            blueHome.Add(new Position(7, 8 + i));
+        }
+
+        // Gabungkan CommonPath + HomePath untuk tiap warna
+        _playerPaths[LudoColor.Red] = new List<Position>(commonPath.Concat(redHome));
+        _playerPaths[LudoColor.Green] = new List<Position>(commonPath.Concat(greenHome));
+        _playerPaths[LudoColor.Yellow] = new List<Position>(commonPath.Concat(yellowHome));
+        _playerPaths[LudoColor.Blue] = new List<Position>(commonPath.Concat(blueHome));
+
+
+    }
+    public void InitializeZones()
+    {
+        // === BASE ZONES ===
+        for (int i = 0; i <= 5; i++)
+        {
+            for (int j = 0; j <= 5; j++)
+                _zoneMap[new Position(i, j)] = ZoneType.Base; // Red Base
+
+            for (int j = 9; j <= 14; j++)
+                _zoneMap[new Position(i, j)] = ZoneType.Base; // Green Base
+        }
+
+        for (int i = 9; i <= 14; i++)
+        {
+            for (int j = 0; j <= 5; j++)
+                _zoneMap[new Position(i, j)] = ZoneType.Base;    // Blue Base
+
+            for (int j = 9; j <= 14; j++)
+                _zoneMap[new Position(i, j)] = ZoneType.Base; // Yellow Base
+        }
+
+        _zoneMap[new Position(6, 1)] = ZoneType.StartPoint;
+        _zoneMap[new Position(1, 8)] = ZoneType.StartPoint;
+        _zoneMap[new Position(8, 13)] = ZoneType.StartPoint;
+        _zoneMap[new Position(13, 6)] = ZoneType.StartPoint;
+
+        // === HOME POINTS ===
+        _zoneMap[new Position(7, 6)] = ZoneType.HomePoint;
+        _zoneMap[new Position(6, 7)] = ZoneType.HomePoint;
+        _zoneMap[new Position(7, 8)] = ZoneType.HomePoint;
+        _zoneMap[new Position(8, 7)] = ZoneType.HomePoint;
+
+        // === BLOCKED PATH ===
+        _zoneMap[new Position(7, 7)] = ZoneType.BlockedPath;
+        _zoneMap[new Position(6, 6)] = ZoneType.BlockedPath;
+        _zoneMap[new Position(6, 8)] = ZoneType.BlockedPath;
+        _zoneMap[new Position(8, 6)] = ZoneType.BlockedPath;
+        _zoneMap[new Position(8, 8)] = ZoneType.BlockedPath;
+
+        // === SAFE ZONE (ekspisit) ===
+        _zoneMap[new Position(8, 2)] = ZoneType.SafeZone;
+        _zoneMap[new Position(2, 6)] = ZoneType.SafeZone;
+        _zoneMap[new Position(6, 12)] = ZoneType.SafeZone;
+        _zoneMap[new Position(12, 8)] = ZoneType.SafeZone;
+
+        // === HOME PATH ===
+        for (int j = 1; j <= 5; j++) _zoneMap[new Position(7, j)] = ZoneType.HomePath;
+        for (int i = 1; i <= 5; i++) _zoneMap[new Position(i, 7)] = ZoneType.HomePath;
+        for (int j = 9; j <= 13; j++) _zoneMap[new Position(7, j)] = ZoneType.HomePath;
+        for (int i = 9; i <= 13; i++) _zoneMap[new Position(i, 7)] = ZoneType.HomePath;
+    }
+
+    public ZoneType GetZoneType(int x, int y)
+    {
+        if (_zoneMap.TryGetValue(new Position(x, y), out var zone))
+            return zone;
+        return ZoneType.Empty;
+    }
+
+    public bool IsSafeZone(int x, int y)
+    {
+        var zone = GetZoneType(x, y);
+        return zone == ZoneType.SafeZone || zone == ZoneType.StartPoint || zone == ZoneType.HomePath;
+    }
+
+    public bool IsBlocked(int x, int y)
+    {
+        return GetZoneType(x, y) == ZoneType.BlockedPath;
+    }
+    public void StartGame()
+    {
+        InitializePiece();
+        InitializePath();
+
+        OnGameStart?.Invoke();
+
+        bool gameOver = false;
+        bool bonusTurn = false;
+
+        while (!gameOver)
+        {
+            if (!bonusTurn)
+            {
+                Console.Clear();
+                DrawBoard();
+            }
+
+            var currentPlayer = GetCurrentPlayer();
+            Console.WriteLine($"\nGiliran: {currentPlayer.Name} ({currentPlayer.Color})");
+
+            // Lempar dadu
+            int roll = RollDice();
+            Console.WriteLine($"Lempar dadu: {roll}");
+
+            var pieces = _playerPieces[currentPlayer];
+            var activePieces = pieces.Where(p => p.State == PieceState.Active).ToList();
+            var atBasePieces = pieces.Where(p => p.State == PieceState.AtBase).ToList();
+
+            bool moved = false;
+            bonusTurn = false;
+
+            // === ATURAN EKSTRA: Semua bidak di Base dan bukan 6 ===
+            if (!activePieces.Any() && atBasePieces.Any() && roll != 6)
+            {
+                Console.WriteLine("Semua bidak di Base dan kamu tidak dapat 6. Giliran dilewati!");
+                NextTurn();
+                Console.WriteLine("\nTekan ENTER untuk lanjut...");
+                Console.ReadLine();
+                continue;
+            }
+
+            // === KELUAR DARI BASE JIKA 6 ===
+            if (roll == 6 && atBasePieces.Any())
+            {
+                Console.WriteLine("Kamu punya bidak di Base. Mau keluar? (y/n)");
+                var choice = Console.ReadLine();
+                if (choice?.ToLower() == "y")
+                {
+                    var piece = atBasePieces.First();
+                    piece.State = PieceState.Active;
+                    piece.StepIndex = 0;
+                    piece.BaseIndex = -1;
+                    moved = true;
+                }
+            }
+
+            // === GERAK BIDAK AKTIF ===
+            if (activePieces.Any())
+            {
+                Console.WriteLine("Bidak aktif:");
+                for (int i = 0; i < activePieces.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. Bidak ke-{i + 1} di langkah {activePieces[i].StepIndex}");
+                }
+                Console.Write("Pilih bidak (nomor): ");
+                if (int.TryParse(Console.ReadLine(), out int index) &&
+                    index >= 1 && index <= activePieces.Count)
+                {
+                    var chosenPiece = activePieces[index - 1];
+                    MovePiece(chosenPiece, roll);
+                    moved = true;
                 }
                 else
                 {
-                    Console.WriteLine($"{currentPlayer.Name} has no valid moves.");
+                    Console.WriteLine("Input salah, bidak tidak bergerak.");
                 }
-
-                NextTurn();
             }
-            Console.WriteLine("Game simulation finished.");
-        }
-
-        public int RollDice()
-        {
-            return _dice.Roll();
-        }
-
-        public IPlayer GetCurrentPlayer()
-        {
-            return _players[_currentTurnIndex];
-        }
-
-        public void NextTurn()
-        {
-            _currentTurnIndex = (_currentTurnIndex + 1) % _players.Count;
-        }
-
-        public ZoneType GetZoneTypeForPiece(Piece piece)
-        {
-            // This is a placeholder. In a real game, you would determine the zone type
-            // based on the piece's current position (StepIndex) on its path.
-            if (piece.State == PieceState.AtBase) return ZoneType.Base;
-            if (piece.State == PieceState.Home) return ZoneType.HomePoint;
-
-            // Example: If piece is on the common path (first 52 steps in our simplified path)
-            if (piece.StepIndex >= 0 && piece.StepIndex < 52)
+            else if (!moved)
             {
-                // You'd need a more robust way to map StepIndex to a board Position and then to ZoneType.
-                // For simplicity, let's assume specific step indices correspond to specific zones.
-                // E.g., if step index 0 is a start point for a player.
-                return ZoneType.CommonPath; // Or StartPoint, SafeZone based on actual step
-            }
-            // If piece is on its home path
-            if (piece.StepIndex >= 52 && piece.StepIndex < _playerPaths[piece.PieceColor].Count - 1)
-            {
-                return ZoneType.HomePath;
-            }
-            // If piece is at the home point
-            if (piece.StepIndex == _playerPaths[piece.PieceColor].Count - 1)
-            {
-                return ZoneType.HomePoint;
+                Console.WriteLine("Tidak ada bidak untuk digerakkan.");
             }
 
-            return ZoneType.Empty; // Default or unknown
-        }
-
-        public bool CanMove(IPiece piece, int steps)
-        {
-            // Simplified logic:
-            // 1. If at base, needs a 6 to move out.
-            // 2. If active, check if it can move 'steps' without overshooting home.
-            if (piece.State == PieceState.AtBase)
+            // === CEK CAPTURE DAN BONUS TURN ===
+            if (moved)
             {
-                return steps == 6; // Needs a 6 to move out of base
-            }
-            else if (piece.State == PieceState.Active)
-            {
-                List<Position> playerPath = _playerPaths[piece.PieceColor];
-                return (piece.StepIndex + steps) < playerPath.Count; // Can't overshoot the end of the path
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Moves a piece from an old step index to a new step index.
-        /// This method encapsulates the state changes of the piece.
-        /// </summary>
-        /// <param name="piece">The piece to move.</param>
-        /// <param name="oldStepIndex">The current step index of the piece (-1 if at base).</param>
-        /// <param name="newStepIndex">The target step index for the piece.</param>
-        /// <returns>True if the move was successful, false otherwise.</returns>
-        public bool MovePiece(Piece piece, int oldStepIndex, int newStepIndex)
-        {
-            List<Position> playerPath = _playerPaths[piece.PieceColor];
-
-            if (piece.State == PieceState.AtBase && newStepIndex == 0) // Moving from base to start
-            {
-                piece.State = PieceState.Active;
-                piece.StepIndex = newStepIndex;
-                // You would update the board's Grid here: _board.PlacePiece(piece, playerPath[newStepIndex]);
-                return true;
-            }
-            else if (piece.State == PieceState.Active)
-            {
-                if (newStepIndex < playerPath.Count) // Ensure it doesn't go beyond the path
+                bool captureHappened = CaptureIfExists();
+                if (captureHappened)
                 {
-                    piece.StepIndex = newStepIndex;
-                    // Check if it reached home
-                    if (piece.StepIndex == playerPath.Count - 1) // Assuming last step is home point
-                    {
-                        piece.State = PieceState.Home;
-                    }
-                    // Update board: _board.RemovePiece(playerPath[oldStepIndex]);
-                    //              _board.PlacePiece(piece, playerPath[newStepIndex]);
-                    return true;
+                    bonusTurn = true;
+                    Console.WriteLine("Kamu dapat bonus giliran karena menangkap lawan!");
+                }
+
+                // CEK MENANG
+                if (CheckWin(currentPlayer))
+                {
+                    Console.Clear();
+                    DrawBoard();
+                    Console.WriteLine($"\n=== {currentPlayer.Name} MENANG!!! ===");
+                    gameOver = true;
+                    break;
                 }
             }
-            return false; // Invalid move
-        }
 
-        public void CheckWin(IPlayer player)
-        {
-            // A player wins if all their pieces are in the 'Home' state.
-            bool allPiecesHome = _playerPieces[player].All(p => p.State == PieceState.Home);
-            if (allPiecesHome)
+            // === BONUS TURN JIKA DAPAT 6 ===
+            if (roll == 6)
             {
-                Console.WriteLine($"{player.Name} has won the game!");
-                // Here you would typically end the game or remove the player from active turns.
+                Console.WriteLine("Kamu dapat 6! Bonus giliran!");
+                bonusTurn = true;
             }
-        }
 
-        public void CaptureIfExists()
-        {
-            // This is where the logic for capturing opponent pieces would go.
-            // When a piece lands on a square occupied by an opponent's piece (and it's not a safe zone),
-            // the opponent's piece is sent back to its base.
-            // This would involve iterating through the current positions of active pieces and checking for collisions.
-            Console.WriteLine("Checking for captures (logic not implemented in detail).");
-        }
+            // === GILIRAN SELANJUTNYA ===
+            if (!bonusTurn)
+                NextTurn();
 
-        public bool CanEnterFromBase(Piece piece, int roll)
-        {
-            // A piece can enter from base if a 6 is rolled.
-            // Also needs to check if the start point is not blocked by own piece.
-            if (piece.State == PieceState.AtBase && roll == 6)
-            {
-                // In a real game, you would check if the player's start position is free
-                // _playerPaths[piece.PieceColor][0] would be the start position.
-                // For now, assume it's always possible.
-                return true;
-            }
-            return false;
-        }
-
-        public List<Position> GetPathForPlayer(Color color)
-        {
-            return _playerPaths.GetValueOrDefault(color);
-        }
-
-        public int GetPiecePathIndex(Piece piece)
-        {
-            // Returns the current step index of the piece on its path.
-            // Returns -1 if at base or home, or if the piece is not found/active on a path.
-            if (piece.State == PieceState.Active || piece.State == PieceState.Home)
-            {
-                return piece.StepIndex;
-            }
-            return -1;
+            Console.WriteLine("\nTekan ENTER untuk lanjut giliran berikutnya...");
+            Console.ReadLine();
         }
     }
-
-    class Program
+    public int RollDice()
     {
-        static void Main(string[] args)
+        return _dice.Roll();
+    }
+    public IPlayer GetCurrentPlayer()
+    {
+        return _players[_currentTurnIndex];
+    }
+    public void NextTurn()
+    {
+        _currentTurnIndex = (_currentTurnIndex + 1) % _players.Count;
+    }
+    public ZoneType GetZoneTypePiece(IPiece piece)
+    {
+        var path = GetPathForPlayer(piece.PieceColor);
+        if (piece.StepIndex >= 0 && piece.StepIndex < path.Count)
         {
-            // Create players
-            IPlayer player1 = new Player("Alice", Color.RED);
-            IPlayer player2 = new Player("Bob", Color.BLUE);
-            IPlayer player3 = new Player("Charlie", Color.GREEN);
-            IPlayer player4 = new Player("Diana", Color.YELLOW);
-
-            // Create dice and board
-            IDice dice = new Dice();
-            IBoard board = new Board();
-
-            // Create game controller
-            GameController gameController = new GameController(player1, player2, player3, player4, dice, board);
-
-            // Subscribe to game start event
-            gameController.OnGameStart += () => Console.WriteLine("Game is officially starting!");
-
-            // Start the game simulation
-            gameController.StartGame();
-
-            Console.WriteLine("\nPress any key to exit.");
-            Console.ReadKey();
+            var position = path[piece.StepIndex];
+            return _zoneMap.ContainsKey(position) ? _zoneMap[position] : ZoneType.Empty;
         }
+        return ZoneType.Empty;
+    }
+    public bool CanMove(IPiece piece, int steps)
+    {
+        return piece.State != PieceState.Home;
+    }
+    public bool MovePiece(IPiece piece, int steps)
+    {
+        if (!CanMove(piece, steps))
+            return false;
+        var path = GetPathForPlayer(piece.PieceColor);
+        piece.StepIndex += steps;
+        //Cek apakah sudah sampai HomePoint
+        if (piece.StepIndex >= path.Count - 1)
+        {
+            piece.StepIndex = path.Count - 1;
+            piece.State = PieceState.Home;
+            Console.WriteLine($"{piece.PlayerOwner.Name} bidaknya masuk Home!");
+        }
+        else if (piece.StepIndex >= 52 && piece.State == PieceState.Active)
+        {
+            Console.WriteLine($"{piece.PlayerOwner.Name} bidaknya memasuki HomePath");
+        }
+        return true;
+    }
+    public bool CheckWin(IPlayer player)
+    {
+        return _playerPieces[player].All(p => p.State == PieceState.Home);
+    }
+    public bool CaptureIfExists()
+    {
+        var currentPlayer = GetCurrentPlayer();
+        var currentPieces = _playerPieces[currentPlayer];
+        bool captured = false;
+
+        foreach (var myPiece in currentPieces)
+        {
+            if (myPiece.State == PieceState.AtBase || myPiece.State == PieceState.Home)
+                continue;
+
+            var myPath = GetPathForPlayer(myPiece.PieceColor);
+            var myPos = myPath[myPiece.StepIndex];
+
+            if (IsSafeZone(myPos.X, myPos.Y))
+                continue;
+
+            foreach (var opponent in _players)
+            {
+                if (opponent == currentPlayer) continue;
+
+                var opponentPieces = _playerPieces[opponent];
+                foreach (var enemyPiece in opponentPieces)
+                {
+                    if (enemyPiece.State == PieceState.Active)
+                    {
+                        var enemyPath = GetPathForPlayer(enemyPiece.PieceColor);
+                        var enemyPos = enemyPath[enemyPiece.StepIndex];
+
+                        if (enemyPos.Equals(myPos))
+                        {
+                            enemyPiece.State = PieceState.AtBase;
+                            enemyPiece.StepIndex = 0;
+                            Console.WriteLine($"{currentPlayer.Name} menangkap bidak {opponent.Name}!");
+                            captured = true;
+                        }
+                    }
+                }
+            }
+        }
+        return captured;
+    }
+    public bool CanEnterFromBase(IPiece piece, int roll)
+    {
+        return roll == 6 && piece.State == PieceState.AtBase;
+    }
+    public List<Position> GetPathForPlayer(LudoColor color)
+    {
+        return _playerPaths[color];
+    }
+    public int GetPiecePathIndex(IPiece piece)
+    {
+        return piece.StepIndex;
     }
 }

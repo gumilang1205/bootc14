@@ -12,8 +12,15 @@ class Program
         Player player3 = new Player("Cica", LudoColor.Green);
         Player player4 = new Player("Duda", LudoColor.Blue);
 
-        // IDice dice = new Dice();
-        // IBoard board = new Board();
+        IDice dice = new Dice();
+        IBoard board = new Board();
+
+        GameController controller = new GameController(player1, player2, player3, player4, dice, board);
+        controller.OnGameStart += () => Console.WriteLine("Selamat bermain!!!");
+
+        controller.StartGame();
+
+        
 
 
     }
