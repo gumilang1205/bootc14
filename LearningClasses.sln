@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudoGemini", "LudoGemini\Lu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamAndIO", "StreamAndIO\StreamAndIO.csproj", "{71F89A58-7A65-4224-AEBB-414F3E664CE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tugas4", "Tugas4\Tugas4.csproj", "{4C056A5E-9719-4D41-A41A-195FEDFB761D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,5 +146,9 @@ Global
 		{71F89A58-7A65-4224-AEBB-414F3E664CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71F89A58-7A65-4224-AEBB-414F3E664CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71F89A58-7A65-4224-AEBB-414F3E664CE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C056A5E-9719-4D41-A41A-195FEDFB761D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C056A5E-9719-4D41-A41A-195FEDFB761D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C056A5E-9719-4D41-A41A-195FEDFB761D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C056A5E-9719-4D41-A41A-195FEDFB761D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
