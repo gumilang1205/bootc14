@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 
 class Program
 {
@@ -14,7 +16,7 @@ class Program
 
         // Inisialisasi dadu dan papan
         IDice dice = new Dice();
-        IBoard board = new Board(); // Board sekarang memiliki inisialisasi dasar
+        IBoard board = new Board();
 
         // Inisialisasi game controller
         GameController controller = new GameController(player1, player2, player3, player4, dice, board);
@@ -24,6 +26,8 @@ class Program
 
         // Memulai permainan
         controller.StartGame();
+
+
     }
 }
 
@@ -69,17 +73,17 @@ public class Board : IBoard
         // Jalur vertikal tengah (kolom 6 dan 8)
         for (int y = 0; y < 15; y++)
         {
-            if (!_predefinedZones.ContainsKey(new Position(6, y)) || _predefinedZones[new Position(6,y)] == ZoneType.Empty)
+            if (!_predefinedZones.ContainsKey(new Position(6, y)) || _predefinedZones[new Position(6, y)] == ZoneType.Empty)
                 _predefinedZones[new Position(6, y)] = ZoneType.CommonPath;
-            if (!_predefinedZones.ContainsKey(new Position(8, y)) || _predefinedZones[new Position(8,y)] == ZoneType.Empty)
+            if (!_predefinedZones.ContainsKey(new Position(8, y)) || _predefinedZones[new Position(8, y)] == ZoneType.Empty)
                 _predefinedZones[new Position(8, y)] = ZoneType.CommonPath;
         }
         // Jalur horizontal tengah (baris 6 dan 8)
         for (int x = 0; x < 15; x++)
         {
-            if (!_predefinedZones.ContainsKey(new Position(x, 6)) || _predefinedZones[new Position(x,6)] == ZoneType.Empty)
+            if (!_predefinedZones.ContainsKey(new Position(x, 6)) || _predefinedZones[new Position(x, 6)] == ZoneType.Empty)
                 _predefinedZones[new Position(x, 6)] = ZoneType.CommonPath;
-            if (!_predefinedZones.ContainsKey(new Position(x, 8)) || _predefinedZones[new Position(x,8)] == ZoneType.Empty)
+            if (!_predefinedZones.ContainsKey(new Position(x, 8)) || _predefinedZones[new Position(x, 8)] == ZoneType.Empty)
                 _predefinedZones[new Position(x, 8)] = ZoneType.CommonPath;
         }
 
@@ -88,7 +92,7 @@ public class Board : IBoard
         {
             if (y != 7) // Jangan tiban HomePoint
             {
-                if (!_predefinedZones.ContainsKey(new Position(7, y)) || _predefinedZones[new Position(7,y)] == ZoneType.Empty)
+                if (!_predefinedZones.ContainsKey(new Position(7, y)) || _predefinedZones[new Position(7, y)] == ZoneType.Empty)
                     _predefinedZones[new Position(7, y)] = ZoneType.CommonPath;
             }
         }
@@ -96,7 +100,7 @@ public class Board : IBoard
         {
             if (x != 7) // Jangan tiban HomePoint
             {
-                if (!_predefinedZones.ContainsKey(new Position(x, 7)) || _predefinedZones[new Position(x,7)] == ZoneType.Empty)
+                if (!_predefinedZones.ContainsKey(new Position(x, 7)) || _predefinedZones[new Position(x, 7)] == ZoneType.Empty)
                     _predefinedZones[new Position(x, 7)] = ZoneType.CommonPath;
             }
         }
@@ -113,15 +117,15 @@ public class Board : IBoard
 
         // Safe Zones (bintang, override CommonPath/StartPoint jika ada)
         // Safe zones include all start points and other marked safe cells
-        _predefinedZones[new Position(6, 1)] = ZoneType.SafeZone;  // Start Red
-        _predefinedZones[new Position(13, 6)] = ZoneType.SafeZone; // Start Yellow
-        _predefinedZones[new Position(8, 13)] = ZoneType.SafeZone; // Start Green
-        _predefinedZones[new Position(1, 8)] = ZoneType.SafeZone;  // Start Blue
+        _predefinedZones[new Position(6, 1)] = ZoneType.StartPoint;   // Start Red
+        _predefinedZones[new Position(13, 6)] = ZoneType.StartPoint;  // Start Yellow
+        _predefinedZones[new Position(8, 13)] = ZoneType.StartPoint;  // Start Green
+        _predefinedZones[new Position(1, 8)] = ZoneType.StartPoint;   // Start Blue
 
-        _predefinedZones[new Position(1, 6)] = ZoneType.SafeZone;  // Safe after Red's first turn
-        _predefinedZones[new Position(6, 9)] = ZoneType.SafeZone;  // Safe after Blue's first turn
-        _predefinedZones[new Position(13, 8)] = ZoneType.SafeZone; // Safe after Green's first turn
-        _predefinedZones[new Position(8, 5)] = ZoneType.SafeZone;  // Safe after Yellow's first turn
+        _predefinedZones[new Position(2, 6)] = ZoneType.SafeZone;   // Safe after Red's first turn
+        _predefinedZones[new Position(6, 12)] = ZoneType.SafeZone;   // Safe after Blue's first turn
+        _predefinedZones[new Position(12, 8)] = ZoneType.SafeZone;  // Safe after Green's first turn
+        _predefinedZones[new Position(8, 2)] = ZoneType.SafeZone;   // Safe after Yellow's first turn
     }
 
     // Metode untuk mendapatkan tipe zona dari Board (opsional, jika GameController ingin query Board)
@@ -261,7 +265,8 @@ public class GameController
     private IBoard _board; // Sekarang bisa digunakan untuk mendapatkan info zona
 
     private int _currentTurnIndex;
-    private int _consecutiveSixes; // Untuk aturan 3x dadu 6
+
+    // Variabel _consecutiveSixes sudah dihapus
 
     public event Action OnGameStart;
 
@@ -299,10 +304,10 @@ public class GameController
         // Titik start untuk setiap warna
         _startPoints = new Dictionary<LudoColor, Position>
         {
-            [LudoColor.Red] = new Position(6, 1),    // Merah: Samping kiri jalur vertikal atas
-            [LudoColor.Yellow] = new Position(13, 6), // Kuning: Bawah jalur horizontal kanan
-            [LudoColor.Green] = new Position(8, 13),  // Hijau: Samping kanan jalur vertikal bawah
-            [LudoColor.Blue] = new Position(1, 8)     // Biru: Atas jalur horizontal kiri
+            [LudoColor.Red] = new Position(6, 1),      // Merah: Samping kiri jalur vertikal atas
+            [LudoColor.Yellow] = new Position(13, 6),  // Kuning: Bawah jalur horizontal kanan
+            [LudoColor.Green] = new Position(8, 13),   // Hijau: Samping kanan jalur vertikal bawah
+            [LudoColor.Blue] = new Position(1, 8)      // Biru: Atas jalur horizontal kiri
         };
 
         // Titik masuk ke jalur Home untuk setiap warna (langkah ke-51 di jalur umum)
@@ -312,11 +317,11 @@ public class GameController
             [LudoColor.Red] = new Position(7, 0),    // Sebelum jalur rumah Red
             [LudoColor.Yellow] = new Position(14, 7), // Sebelum jalur rumah Yellow
             [LudoColor.Green] = new Position(7, 14),  // Sebelum jalur rumah Green
-            [LudoColor.Blue] = new Position(0, 7)     // Sebelum jalur rumah Blue
+            [LudoColor.Blue] = new Position(0, 7)    // Sebelum jalur rumah Blue
         };
 
         _currentTurnIndex = 0;
-        _consecutiveSixes = 0;
+        // _consecutiveSixes sudah dihapus
 
         InitializePaths(); // Panggil ini sebelum InitializePieces karena Pieces butuh info path
         InitializePieces();
@@ -344,33 +349,6 @@ public class GameController
             bool movedPiece = false;
             bool gotBonusTurn = false;
 
-            // Aturan 3x dadu 6 berturut-turut
-            if (roll == 6)
-            {
-                _consecutiveSixes++;
-                if (_consecutiveSixes == 3)
-                {
-                    Console.WriteLine("Dapat 6 tiga kali berturut-turut! Bidak terakhirmu kembali ke base!");
-                    var activePiecess = _playerPieces[currentPlayer].Where(p => p.State == PieceState.Active).ToList();
-                    if (activePiecess.Any())
-                    {
-                        // Kembalikan bidak yang paling baru digerakkan.
-                        // Jika tidak ada pelacakan "terbaru digerakkan", kita ambil sembarang bidak aktif.
-                        // Untuk kesederhanaan, kita ambil bidak aktif pertama dalam list.
-                        ReturnPieceToBase(activePiecess.First());
-                    }
-                    _consecutiveSixes = 0; // Reset
-                    NextTurn();
-                    Console.WriteLine("\nTekan ENTER untuk lanjut...");
-                    Console.ReadLine();
-                    continue; // Lewati giliran
-                }
-            }
-            else
-            {
-                _consecutiveSixes = 0; // Reset jika tidak 6
-            }
-
             var pieces = _playerPieces[currentPlayer];
             var activePieces = pieces.Where(p => p.State == PieceState.Active).ToList();
             var atBasePieces = pieces.Where(p => p.State == PieceState.AtBase).ToList();
@@ -384,7 +362,7 @@ public class GameController
                 // Beri opsi untuk mengeluarkan bidak atau memindahkan bidak aktif
                 Console.WriteLine("Pilihan pergerakan:");
                 Console.WriteLine($"1. Keluarkan bidak dari Base (Bidak {ColorToString(atBasePieces.First().PieceColor)} pertama)");
-                
+
                 int optionCounter = 2;
                 foreach (var piece in activePieces)
                 {
@@ -534,61 +512,21 @@ public class GameController
     {
         // Mendefinisikan satu common path universal (52 langkah)
         var universalCommonPath = new List<Position>();
-
         // Bagian atas (arah kanan, di antara base merah dan kuning)
         for (int y = 1; y <= 5; y++) universalCommonPath.Add(new Position(6, y));
-        universalCommonPath.Add(new Position(5, 6));
-        universalCommonPath.Add(new Position(4, 6));
-        universalCommonPath.Add(new Position(3, 6));
-        universalCommonPath.Add(new Position(2, 6));
-        universalCommonPath.Add(new Position(1, 6));
-        universalCommonPath.Add(new Position(0, 6));
-
+        for (int x = 5; x >= 0; x--) universalCommonPath.Add(new Position(x, 6));
         // Bagian kiri (arah bawah, di antara base biru dan hijau)
         universalCommonPath.Add(new Position(0, 7)); // Ini adalah Home Entry Point untuk Blue
-        universalCommonPath.Add(new Position(0, 8));
-        universalCommonPath.Add(new Position(1, 8));
-        universalCommonPath.Add(new Position(2, 8));
-        universalCommonPath.Add(new Position(3, 8));
-        universalCommonPath.Add(new Position(4, 8));
-        universalCommonPath.Add(new Position(5, 8));
-        universalCommonPath.Add(new Position(6, 9));
-        universalCommonPath.Add(new Position(6, 10));
-        universalCommonPath.Add(new Position(6, 11));
-        universalCommonPath.Add(new Position(6, 12));
-        universalCommonPath.Add(new Position(6, 13));
-        universalCommonPath.Add(new Position(6, 14));
-
+        for (int x = 0; x <= 5; x++) universalCommonPath.Add(new Position(x, 8));
+        for (int y = 9; y <= 14; y++) universalCommonPath.Add(new Position(6, y));
         // Bagian bawah (arah kiri, di antara base hijau dan biru)
         universalCommonPath.Add(new Position(7, 14)); // Ini adalah Home Entry Point untuk Green
-        universalCommonPath.Add(new Position(8, 14));
-        universalCommonPath.Add(new Position(8, 13));
-        universalCommonPath.Add(new Position(8, 12));
-        universalCommonPath.Add(new Position(8, 11));
-        universalCommonPath.Add(new Position(8, 10));
-        universalCommonPath.Add(new Position(8, 9));
-        universalCommonPath.Add(new Position(9, 8));
-        universalCommonPath.Add(new Position(10, 8));
-        universalCommonPath.Add(new Position(11, 8));
-        universalCommonPath.Add(new Position(12, 8));
-        universalCommonPath.Add(new Position(13, 8));
-        universalCommonPath.Add(new Position(14, 8));
-
+        for (int y = 14; y >= 9; y--) universalCommonPath.Add(new Position(8, y));
+        for (int x = 9; x <= 14; x++) universalCommonPath.Add(new Position(x, 8));
         // Bagian kanan (arah atas, di antara base kuning dan merah)
         universalCommonPath.Add(new Position(14, 7)); // Ini adalah Home Entry Point untuk Yellow
-        universalCommonPath.Add(new Position(14, 6));
-        universalCommonPath.Add(new Position(13, 6));
-        universalCommonPath.Add(new Position(12, 6));
-        universalCommonPath.Add(new Position(11, 6));
-        universalCommonPath.Add(new Position(10, 6));
-        universalCommonPath.Add(new Position(9, 6));
-        universalCommonPath.Add(new Position(8, 5));
-        universalCommonPath.Add(new Position(8, 4));
-        universalCommonPath.Add(new Position(8, 3));
-        universalCommonPath.Add(new Position(8, 2));
-        universalCommonPath.Add(new Position(8, 1));
-        universalCommonPath.Add(new Position(8, 0));
-
+        for (int x = 14; x >= 9; x--) universalCommonPath.Add(new Position(x, 6));
+        for (int y = 5; y >= 0; y--) universalCommonPath.Add(new Position(8, y));
         universalCommonPath.Add(new Position(7, 0)); // Ini adalah Home Entry Point untuk Red
         universalCommonPath.Add(new Position(6, 0)); // Langkah ke-52, tepat sebelum start point merah.
 
@@ -617,11 +555,9 @@ public class GameController
         _playerPaths[LudoColor.Yellow] = CreatePlayerPath(universalCommonPath, LudoColor.Yellow, yellowHome);
         _playerPaths[LudoColor.Green] = CreatePlayerPath(universalCommonPath, LudoColor.Green, greenHome);
         _playerPaths[LudoColor.Blue] = CreatePlayerPath(universalCommonPath, LudoColor.Blue, blueHome);
+
     }
 
-    /// <summary>
-    /// Fungsi helper untuk membuat jalur pemain (51 common + 6 home).
-    /// </summary>
     private List<Position> CreatePlayerPath(List<Position> commonPath, LudoColor color, List<Position> homePath)
     {
         var playerSpecificPath = new List<Position>();
@@ -658,7 +594,7 @@ public class GameController
                 break;
             }
         }
-        
+
         // Add the home path (6 steps)
         playerSpecificPath.AddRange(homePath);
 
@@ -686,7 +622,7 @@ public class GameController
     public void DrawBoard()
     {
         Console.WriteLine("------------------------------------------");
-        Console.WriteLine("              Papan Ludo                 ");
+        Console.WriteLine("             Papan Ludo                 ");
         Console.WriteLine("------------------------------------------");
 
         char[,] display = new char[15, 15];
@@ -697,7 +633,7 @@ public class GameController
             for (int x = 0; x < 15; x++)
             {
                 // Ambil tipe zona dari objek _board yang diinjeksi
-                ZoneType zone = _board.GetZoneType(x, y); 
+                ZoneType zone = _board.GetZoneType(x, y);
                 switch (zone)
                 {
                     case ZoneType.Base: display[x, y] = '#'; break;
@@ -761,32 +697,38 @@ public class GameController
                     switch (zone)
                     {
                         case ZoneType.Base: Console.ForegroundColor = ConsoleColor.DarkGray; break;
-                        case ZoneType.StartPoint: Console.ForegroundColor = ConsoleColor.White; break;
+                        case ZoneType.StartPoint: Console.ForegroundColor = ConsoleColor.DarkBlue; break;
                         case ZoneType.SafeZone: Console.ForegroundColor = ConsoleColor.Cyan; break;
                         case ZoneType.HomePath: Console.ForegroundColor = ConsoleColor.Magenta; break;
                         case ZoneType.HomePoint: Console.ForegroundColor = ConsoleColor.DarkYellow; break;
                         case ZoneType.CommonPath: Console.ForegroundColor = ConsoleColor.Gray; break;
-                        default: Console.ForegroundColor = ConsoleColor.DarkGray; break; // Area kosong
+                        default: Console.ForegroundColor = ConsoleColor.White; break;
                     }
                 }
-                Console.Write(charToDisplay + " "); // Cetak karakter dengan spasi
-                Console.ForegroundColor = originalColor; // Kembalikan warna
+                Console.Write(charToDisplay + " ");
+                Console.ForegroundColor = originalColor;
             }
-            Console.WriteLine(); // Baris baru setelah setiap baris X selesai
+            Console.WriteLine();
         }
-        Console.ResetColor(); // Reset warna konsol ke default
-        Console.WriteLine("------------------------------------------");
-    }
 
-    // Helper untuk mendapatkan karakter bidak berdasarkan warna
-    private char GetPieceChar(LudoColor color)
-    {
-        return color.ToString()[0];
-    }
-
-    public int RollDice()
-    {
-        return _dice.Roll();
+        Console.WriteLine("\nKeterangan:");
+        Console.ForegroundColor = ConsoleColor.Red; Console.Write("R ");
+        Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("Y ");
+        Console.ForegroundColor = ConsoleColor.Green; Console.Write("G ");
+        Console.ForegroundColor = ConsoleColor.Blue; Console.Write("B ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Bidak pemain");
+        Console.ForegroundColor = ConsoleColor.DarkGray; Console.Write("# ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Base");
+        Console.ForegroundColor = ConsoleColor.DarkCyan; Console.Write("S ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Start Point");
+        Console.ForegroundColor = ConsoleColor.Cyan; Console.Write("* ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Safe Zone");
+        Console.ForegroundColor = ConsoleColor.Magenta; Console.Write("= ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Home Path");
+        Console.ForegroundColor = ConsoleColor.DarkYellow; Console.Write("H ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Home Point (Tujuan)");
+        Console.ForegroundColor = ConsoleColor.Gray; Console.Write("- ");
+        Console.ForegroundColor = ConsoleColor.White; Console.WriteLine("= Common Path");
     }
 
     public IPlayer GetCurrentPlayer()
@@ -794,157 +736,101 @@ public class GameController
         return _players[_currentTurnIndex];
     }
 
-    public void NextTurn()
+    private void NextTurn()
     {
         _currentTurnIndex = (_currentTurnIndex + 1) % _players.Count;
     }
 
-    // Metode ini sekarang akan memanggil GetZoneType dari objek _board
-    public ZoneType GetZoneType(int x, int y)
+    private int RollDice()
     {
-        return _board.GetZoneType(x, y);
+        return _dice.Roll();
     }
 
-    // Metode ini juga akan memanggil IsSafeZone dari objek _board
-    public bool IsSafeZone(Position pos)
-    {
-        return _board.GetZoneType(pos.X, pos.Y) == ZoneType.SafeZone || _board.GetZoneType(pos.X, pos.Y) == ZoneType.StartPoint;
-    }
-
-    // Mengecek apakah bidak bisa bergerak
-    public bool CanMove(IPiece piece, int steps)
-    {
-        if (piece.State == PieceState.Home) return false;
-
-        var path = GetPathForPlayer(piece.PieceColor);
-        int targetStepIndex = piece.StepIndex + steps;
-
-        // Jika bidak masih di base, hanya bisa bergerak jika dadu 6
-        if (piece.State == PieceState.AtBase)
-        {
-            return steps == 6;
-        }
-        // Jika bidak aktif, cek apakah langkah tidak melebihi home point
-        else if (piece.State == PieceState.Active)
-        {
-            // Tidak boleh melebihi total panjang jalur (termasuk home path)
-            return targetStepIndex < path.Count;
-        }
-        return false;
-    }
-
-    // Memindahkan bidak dari base ke start point
-    public void MovePieceFromBase(IPiece piece)
+    // Metode untuk memindahkan bidak
+    private bool MovePiece(IPiece piece, int roll)
     {
         if (piece.State == PieceState.AtBase)
         {
-            piece.State = PieceState.Active;
-            piece.StepIndex = _playerPaths[piece.PieceColor].IndexOf(_startPoints[piece.PieceColor]); // Set ke indeks awal jalur (start point)
-            piece.BaseIndex = -1; // Tidak lagi di base
-            Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} milik {piece.PlayerOwner.Name} keluar dari base!");
-
-            // Cek apakah ada bidak lawan di start point, dan tangkap jika ada (start point juga safe zone, tapi bisa capture jika keluar base)
-            var startPos = GetPathForPlayer(piece.PieceColor)[piece.StepIndex];
-            CheckAndCaptureOpponentPieces(piece.PlayerOwner, startPos, true); // True = ignore safe zone for capture on start
-        }
-    }
-
-
-    // Memindahkan bidak yang aktif
-    public bool MovePiece(IPiece piece, int steps)
-    {
-        if (piece.State != PieceState.Active) return false;
-
-        var path = GetPathForPlayer(piece.PieceColor);
-        int newStepIndex = piece.StepIndex + steps;
-
-        // Cek jika bidak mencapai atau melewati home point
-        if (newStepIndex >= path.Count) // path.Count adalah total langkah termasuk Home Point
-        {
-            // Jika persis mencapai home point (indeks terakhir home path)
-            if (newStepIndex == path.Count -1) // Indeks terakhir home path adalah home point
+            if (roll == 6)
             {
-                piece.StepIndex = newStepIndex; 
-                piece.State = PieceState.Home;
-                Console.WriteLine($"{piece.PlayerOwner.Name}'s {ColorToString(piece.PieceColor)} mencapai Home!");
+                MovePieceFromBase(piece);
                 return true;
             }
-            else // Jika melebihi home point, bidak tidak bisa bergerak (overshoot)
-            {
-                Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} milik {piece.PlayerOwner.Name} tidak bisa bergerak {steps} langkah karena akan overshoot Home.");
-                return false;
-            }
+            return false;
         }
+
+        int newStepIndex = piece.StepIndex + roll;
+        var path = GetPathForPlayer(piece.PieceColor);
+
+        // Cek jika bidak akan mendarat di Home Point
+        if (newStepIndex == path.Count - 1)
+        {
+            piece.StepIndex = newStepIndex;
+            piece.State = PieceState.Home;
+            Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} mendarat di Home Point!");
+            return true;
+        }
+        // Cek jika langkah melebihi jalur
+        else if (newStepIndex >= path.Count)
+        {
+            Console.WriteLine($"Langkah {roll} terlalu banyak. Bidak tidak bisa digerakkan.");
+            return false;
+        }
+        // Pindahkan bidak
         else
         {
             piece.StepIndex = newStepIndex;
-            Console.WriteLine($"{piece.PlayerOwner.Name}'s {ColorToString(piece.PieceColor)} bergerak ke langkah {newStepIndex + 1}.");
+            Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} pindah ke langkah {piece.StepIndex + 1}.");
             return true;
         }
     }
 
-    // Mengembalikan bidak ke base
-    public void ReturnPieceToBase(IPiece piece)
+    // Memindahkan bidak dari base ke titik start
+    private void MovePieceFromBase(IPiece piece)
     {
-        piece.State = PieceState.AtBase;
-        piece.StepIndex = -1;
-        // Temukan posisi base yang kosong dan tetapkan BaseIndex
-        for (int i = 0; i < 4; i++)
+        var startPoint = _startPoints[piece.PieceColor];
+        var path = GetPathForPlayer(piece.PieceColor);
+
+        // Temukan index start point di path pemain
+        int startIndex = path.IndexOf(startPoint);
+        if (startIndex == -1)
         {
-            if (!_playerPieces[piece.PlayerOwner].Any(p => p.State == PieceState.AtBase && p.BaseIndex == i))
-            {
-                piece.BaseIndex = i;
-                break;
-            }
+            Console.WriteLine("Error: Start point tidak ditemukan di jalur pemain.");
+            return;
         }
-        Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} milik {piece.PlayerOwner.Name} dikembalikan ke base!");
+
+        piece.State = PieceState.Active;
+        piece.StepIndex = startIndex;
+        piece.BaseIndex = -1;
     }
 
-    /// <summary>
-    /// Mengecek dan menangkap bidak lawan di posisi tertentu.
-    /// </summary>
-    /// <param name="currentPlayer">Pemain yang sedang bergerak.</param>
-    /// <param name="currentPos">Posisi bidak saat ini.</param>
-    /// <param name="ignoreSafeZone">True jika capture boleh dilakukan meskipun di safe zone (misal: saat keluar dari base ke start point).</param>
-    /// <returns>True jika ada bidak lawan yang berhasil ditangkap, False jika tidak.</returns>
-    public bool CheckAndCaptureOpponentPieces(IPlayer currentPlayer, Position currentPos, bool ignoreSafeZone = false)
+    private bool CheckAndCaptureOpponentPieces(IPlayer currentPlayer, Position currentPosition)
     {
         bool captured = false;
-        // Jika posisi adalah safe zone dan kita tidak mengabaikan safe zone, maka tidak ada capture.
-        // Pengecualian: Saat bidak keluar dari base, ia bisa menangkap bidak lain di start point-nya,
-        // meskipun start point adalah safe zone untuk pemiliknya.
-        if (!ignoreSafeZone && IsSafeZone(currentPos)) // Menggunakan IsSafeZone dari GameController (yang query _board)
+        // Hanya cek jika posisi tidak berada di Safe Zone
+        ZoneType zoneType = _board.GetZoneType(currentPosition.X, currentPosition.Y);
+        if (zoneType == ZoneType.SafeZone)
         {
-            return false;
+            return false; // Tidak bisa menangkap di safe zone
         }
 
-        foreach (var playerKvp in _playerPieces)
+        foreach (var otherPlayer in _players)
         {
-            IPlayer opponentPlayer = playerKvp.Key;
-            if (opponentPlayer == currentPlayer) continue; // Jangan cek bidak sendiri
-
-            foreach (var opponentPiece in playerKvp.Value)
+            if (otherPlayer != currentPlayer)
             {
-                if (opponentPiece.State == PieceState.Active)
+                foreach (var otherPiece in _playerPieces[otherPlayer])
                 {
-                    var opponentPath = GetPathForPlayer(opponentPiece.PieceColor);
-                    if (opponentPiece.StepIndex >= 0 && opponentPiece.StepIndex < opponentPath.Count)
+                    if (otherPiece.State == PieceState.Active)
                     {
-                        var opponentPos = opponentPath[opponentPiece.StepIndex];
-
-                        if (opponentPos.Equals(currentPos))
+                        var otherPath = GetPathForPlayer(otherPiece.PieceColor);
+                        if (otherPiece.StepIndex >= 0 && otherPiece.StepIndex < otherPath.Count)
                         {
-                            // Jika bidak lawan berada di posisi yang sama dan bukan di safe zone
-                            // atau jika ignoreSafeZone adalah true (kasus keluar dari base)
-                            if (!IsSafeZone(opponentPos) || ignoreSafeZone) // Menggunakan IsSafeZone dari GameController
+                            if (otherPath[otherPiece.StepIndex].Equals(currentPosition))
                             {
-                                Console.WriteLine($"Bidak {ColorToString(opponentPiece.PieceColor)} milik {opponentPlayer.Name} ditangkap oleh {currentPlayer.Name}!");
-                                ReturnPieceToBase(opponentPiece);
+                                // Kumpulkan bidak lawan kembali ke base
+                                ReturnPieceToBase(otherPiece);
+                                Console.WriteLine($"Bidak {ColorToString(otherPiece.PieceColor)} milik {otherPlayer.Name} kembali ke base!");
                                 captured = true;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Bidak {ColorToString(opponentPiece.PieceColor)} milik {opponentPlayer.Name} berada di Safe Zone, tidak bisa ditangkap.");
                             }
                         }
                     }
@@ -954,22 +840,54 @@ public class GameController
         return captured;
     }
 
+    private void ReturnPieceToBase(IPiece piece)
+    {
+        piece.State = PieceState.AtBase;
+        piece.StepIndex = -1;
+        // Cari slot base yang kosong
+        for (int i = 0; i < 4; i++)
+        {
+            if (!_playerPieces[piece.PlayerOwner].Any(p => p.BaseIndex == i))
+            {
+                piece.BaseIndex = i;
+                break;
+            }
+        }
+    }
 
-    // Mengecek kemenangan
-    public bool CheckWin(IPlayer player)
+    private bool CanMove(IPiece piece, int roll)
+    {
+        if (piece.State == PieceState.AtBase)
+        {
+            return roll == 6;
+        }
+        // Pastikan tidak melebihi jalur
+        var path = GetPathForPlayer(piece.PieceColor);
+        return piece.StepIndex + roll < path.Count;
+    }
+
+    private bool CheckWin(IPlayer player)
     {
         return _playerPieces[player].All(p => p.State == PieceState.Home);
     }
 
-    // Helper untuk mendapatkan jalur spesifik pemain berdasarkan warna
-    private List<Position> GetPathForPlayer(LudoColor color)
-    {
-        return _playerPaths[color];
-    }
-
-    // Helper untuk mengubah LudoColor menjadi string
     private string ColorToString(LudoColor color)
     {
         return color.ToString();
+    }
+
+    private char GetPieceChar(LudoColor color)
+    {
+        return color.ToString()[0];
+    }
+
+    // Metode helper untuk mendapatkan jalur berdasarkan warna
+    private List<Position> GetPathForPlayer(LudoColor color)
+    {
+        if (_playerPaths.TryGetValue(color, out var path))
+        {
+            return path;
+        }
+        return new List<Position>();
     }
 }
