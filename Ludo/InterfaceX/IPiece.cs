@@ -8,6 +8,7 @@ namespace Ludo.interfaceX
         IPlayer PlayerOwner { get; }
         PieceState State { get; set; }
         int StepIndex { get; set; }
+        int BaseIndex { get; set; }
 
     }
 }

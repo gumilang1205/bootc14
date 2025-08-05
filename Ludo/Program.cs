@@ -7,21 +7,23 @@ class Program
 {
     static void Main(string[] args)
     {
+        // Inisialisasi pemain
         Player player1 = new Player("Andi", LudoColor.Red);
         Player player2 = new Player("Bobi", LudoColor.Yellow);
         Player player3 = new Player("Cica", LudoColor.Green);
         Player player4 = new Player("Duda", LudoColor.Blue);
 
+        // Inisialisasi dadu dan papan
         IDice dice = new Dice();
         IBoard board = new Board();
 
+        // Inisialisasi game controller
         GameController controller = new GameController(player1, player2, player3, player4, dice, board);
-        controller.OnGameStart += () => Console.WriteLine("Selamat bermain!!!");
 
+        // Event handler untuk game start
+        controller.OnGameStart += () => Console.WriteLine("Selamat datang di permainan Ludo!");
+
+        // Memulai permainan
         controller.StartGame();
-
-        
-
-
     }
 }

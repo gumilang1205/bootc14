@@ -9,13 +9,15 @@ namespace Ludo.Game
         public IPlayer PlayerOwner { get; }
         public PieceState State { get; set; }
         public int StepIndex { get; set; }
+        public int BaseIndex { get; set; }
 
         public Piece(IPlayer ownerPlayer, LudoColor pieceColor)
         {
             PieceColor = pieceColor;
             PlayerOwner = ownerPlayer;
             State = PieceState.AtBase;
-            StepIndex = 0;
+            StepIndex = -1;
+            BaseIndex = -1;
         }
     }
 }

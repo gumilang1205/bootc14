@@ -285,19 +285,19 @@ public class GameController
         {
             [LudoColor.Red] = new List<Position>
             {
-                new Position(1, 1), new Position(1, 2), new Position(2, 1), new Position(2, 2)
+                new Position(2, 2), new Position(2, 3), new Position(3,2), new Position(3,3)
             },
             [LudoColor.Yellow] = new List<Position>
             {
-                new Position(12, 1), new Position(12, 2), new Position(13, 1), new Position(13, 2)
+                new Position(11, 2), new Position(11, 3), new Position(12, 2), new Position(12, 3)
             },
             [LudoColor.Green] = new List<Position>
             {
-                new Position(12, 12), new Position(12, 13), new Position(13, 12), new Position(13, 13)
+                new Position(11, 11), new Position(11, 12), new Position(12, 11), new Position(12, 12)
             },
             [LudoColor.Blue] = new List<Position>
             {
-                new Position(1, 12), new Position(1, 13), new Position(2, 12), new Position(2, 13)
+                new Position(2, 11), new Position(2, 12), new Position(3, 11), new Position(3, 12)
             }
         };
 
@@ -571,22 +571,22 @@ public class GameController
             return new List<Position>();
         }
 
-        // Add common path steps from player's start point until their home entry point
-        // A standard Ludo path has 51 common steps before entering the home lane.
+        //  Menambahkan langkah-langkah jalur umum dari titik awal pemain hingga titik masuk rumah mereka
+        // Jalur Ludo standar memiliki 51 langkah umum sebelum memasuki jalur pulang.
         int stepsAdded = 0;
-        for (int i = 0; i < commonPath.Count; i++) // Iterate through the whole common path
+        for (int i = 0; i < commonPath.Count; i++) // Lakukan pengulangan melalui seluruh jalur umum
         {
-            // Calculate current index in the circular path
+            // Hitung indeks saat ini di jalur melingkar
             int currentIndex = (startIndex + i) % commonPath.Count;
             Position currentPos = commonPath[currentIndex];
             playerSpecificPath.Add(currentPos);
             stepsAdded++;
 
-            // If we reached the home entry point (which is the 51st step for this player's path view)
+            // Jika kita mencapai titik masuk rumah (yang merupakan langkah ke-51 untuk tampilan jalur pemain ini)
             if (currentPos.Equals(homeEntryPointOnCommonPath))
             {
-                // We should have added exactly 51 steps from the start to the home entry.
-                // If not, there's an an issue with the commonPath or homeEntryPoints.
+                // Kita seharusnya menambahkan tepat 51 langkah dari awal hingga entri beranda.
+                // Jika tidak, berarti ada masalah dengan commonPath atau homeEntryPoints.
                 if (stepsAdded != 51)
                 {
                     Console.WriteLine($"WARNING: Player {color} common path before home entry has {stepsAdded} steps, expected 51!");
@@ -595,7 +595,7 @@ public class GameController
             }
         }
 
-        // Add the home path (6 steps)
+        // Menambahkan jalur rumah (6 langkah)
         playerSpecificPath.AddRange(homePath);
 
         return playerSpecificPath;
@@ -889,5 +889,9 @@ public class GameController
             return path;
         }
         return new List<Position>();
+    }
+    public int GetPiecePathIndex(IPiece piece)
+    {
+        return piece.StepIndex;
     }
 }

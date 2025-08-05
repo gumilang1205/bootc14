@@ -1,14 +1,79 @@
+using Ludo.Enum;
 using Ludo.interfaceX;
 
 namespace Ludo.Game
 {
     public class Board : IBoard
     {
-        public int[,] Grid { get; }
+        public int[,] Grid { get; } = new int[15, 15];
+        private Dictionary<Position, ZoneType> _predefinedZones;
         public Board()
         {
-            Grid = new int[15, 15];
+            _predefinedZones = new Dictionary<Position, ZoneType>();
+            InitializeBoardLayout();
 
+        }
+        private void InitializeBoardLayout()
+        {
+            for (int x = 0; x <= 5; x++) for (int y = 0; y <= 5; y++) _predefinedZones[new Position(x, y)] = ZoneType.Base;
+            for (int x = 9; x <= 14; x++) for (int y = 0; y <= 5; y++) _predefinedZones[new Position(x, y)] = ZoneType.Base;
+            for (int x = 9; x <= 14; x++) for (int y = 9; y <= 14; y++) _predefinedZones[new Position(x, y)] = ZoneType.Base;
+            for (int x = 0; x <= 5; x++) for (int y = 9; y <= 14; y++) _predefinedZones[new Position(x, y)] = ZoneType.Base;
+
+            _predefinedZones[new Position(7, 7)] = ZoneType.HomePoint;
+
+            for (int y = 0; y < 15; y++)
+            {
+                if (!_predefinedZones.ContainsKey(new Position(6, y)) || _predefinedZones[new Position(6, y)] == ZoneType.Empty)
+                    _predefinedZones[new Position(6, y)] = ZoneType.CommonPath;
+                if (!_predefinedZones.ContainsKey(new Position(8, y)) || _predefinedZones[new Position(8, y)] == ZoneType.Empty)
+                    _predefinedZones[new Position(8, y)] = ZoneType.CommonPath;
+            }
+            for (int x = 0; x < 15; x++)
+            {
+                if (!_predefinedZones.ContainsKey(new Position(x, 6)) || _predefinedZones[new Position(x, 6)] == ZoneType.Empty)
+                    _predefinedZones[new Position(x, 6)] = ZoneType.CommonPath;
+                if (!_predefinedZones.ContainsKey(new Position(x, 8)) || _predefinedZones[new Position(x, 8)] == ZoneType.Empty)
+                    _predefinedZones[new Position(x, 8)] = ZoneType.CommonPath;
+            }
+
+            for (int y = 1; y <= 13; y++)
+            {
+                if (y != 7)
+                {
+                    if (!_predefinedZones.ContainsKey(new Position(7, y)) || _predefinedZones[new Position(7, y)] == ZoneType.Empty)
+                        _predefinedZones[new Position(7, y)] = ZoneType.CommonPath;
+                }
+            }
+            for (int x = 1; x <= 13; x++)
+            {
+                if (x != 7)
+                {
+                    if (!_predefinedZones.ContainsKey(new Position(x, 7)) || _predefinedZones[new Position(x, 7)] == ZoneType.Empty)
+                        _predefinedZones[new Position(x, 7)] = ZoneType.CommonPath;
+                }
+            }
+            for (int y = 1; y <= 6; y++) _predefinedZones[new Position(7, y)] = ZoneType.HomePath;
+            for (int x = 8; x <= 13; x++) _predefinedZones[new Position(x, 7)] = ZoneType.HomePath;
+            for (int y = 8; y <= 13; y++) _predefinedZones[new Position(7, y)] = ZoneType.HomePath;
+            for (int x = 1; x <= 6; x++) _predefinedZones[new Position(x, 7)] = ZoneType.HomePath;
+
+            _predefinedZones[new Position(6, 1)] = ZoneType.StartPoint;
+            _predefinedZones[new Position(13, 6)] = ZoneType.StartPoint;
+            _predefinedZones[new Position(8, 13)] = ZoneType.StartPoint;
+            _predefinedZones[new Position(1, 8)] = ZoneType.StartPoint;
+
+            _predefinedZones[new Position(2, 6)] = ZoneType.SafeZone;
+            _predefinedZones[new Position(6, 12)] = ZoneType.SafeZone;
+            _predefinedZones[new Position(12, 8)] = ZoneType.SafeZone;
+            _predefinedZones[new Position(8, 2)] = ZoneType.SafeZone;
+
+        }
+        public ZoneType GetZoneType(int x, int y)
+        {
+            if (_predefinedZones.TryGetValue(new Position(x, y), out var zone))
+                return zone;
+            return ZoneType.Empty;
         }
 
     }
