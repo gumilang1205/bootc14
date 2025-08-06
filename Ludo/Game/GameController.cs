@@ -1,4 +1,4 @@
-using System.Data;
+using System;
 using Ludo.Enum;
 using Ludo.interfaceX;
 
@@ -190,12 +190,10 @@ namespace Ludo.Game
 
             char[,] display = new char[15, 15];
 
-            // Inisialisasi papan dengan karakter default atau berdasarkan zona dari _board
             for (int y = 0; y < 15; y++)
             {
                 for (int x = 0; x < 15; x++)
                 {
-                    // Ambil tipe zona dari objek _board yang diinjeksi
                     ZoneType zone = _board.GetZoneType(x, y);
                     switch (zone)
                     {
@@ -205,12 +203,10 @@ namespace Ludo.Game
                         case ZoneType.HomePath: display[x, y] = '='; break;
                         case ZoneType.HomePoint: display[x, y] = 'H'; break;
                         case ZoneType.CommonPath: display[x, y] = '-'; break;
-                        default: display[x, y] = 'X'; break; // Kosong jika tidak ada zona atau bidak
+                        default: display[x, y] = 'X'; break;
                     }
                 }
             }
-
-            // Tampilkan bidak di jalur dan di base
             foreach (var kvp in _playerPieces)
             {
                 var pieces = kvp.Value;
@@ -223,7 +219,6 @@ namespace Ludo.Game
                         if (piece.StepIndex >= 0 && piece.StepIndex < path.Count)
                         {
                             var pos = path[piece.StepIndex];
-                            // Prioritaskan bidak daripada simbol zona
                             display[pos.X, pos.Y] = GetPieceChar(piece.PieceColor);
                         }
                     }
@@ -235,27 +230,21 @@ namespace Ludo.Game
                             display[pos.X, pos.Y] = GetPieceChar(piece.PieceColor);
                         }
                     }
-                    // Bidak di HomeState tidak perlu ditampilkan di papan utama secara individual
                 }
             }
-
-            // Cetak grid dengan warna
-            for (int y = 0; y < 15; y++) // Iterasi Y (baris)
+            for (int y = 0; y < 15; y++)
             {
-                for (int x = 0; x < 15; x++) // Iterasi X (kolom)
+                for (int x = 0; x < 15; x++)
                 {
                     ConsoleColor originalColor = Console.ForegroundColor;
-                    char charToDisplay = display[x, y]; // Ambil karakter dari display array
+                    char charToDisplay = display[x, y];
 
-                    // Atur warna berdasarkan warna bidak
                     if (charToDisplay == 'R') Console.ForegroundColor = ConsoleColor.Red;
                     else if (charToDisplay == 'Y') Console.ForegroundColor = ConsoleColor.Yellow;
                     else if (charToDisplay == 'G') Console.ForegroundColor = ConsoleColor.Green;
                     else if (charToDisplay == 'B') Console.ForegroundColor = ConsoleColor.Blue;
                     else
                     {
-                        // Atur warna berdasarkan zona jika bukan bidak
-                        // Sekarang ambil dari _board juga untuk konsistensi
                         ZoneType zone = _board.GetZoneType(x, y);
                         switch (zone)
                         {
@@ -382,7 +371,7 @@ namespace Ludo.Game
                         }
                     }
                 }
-                else // Jika dadu bukan 6 atau tidak ada bidak di base
+                else
                 {
                     movablePieces.AddRange(activePieces.Where(p => CanMove(p, roll)));
 
@@ -429,8 +418,6 @@ namespace Ludo.Game
                     }
                 }
 
-
-                // Cek kemenangan
                 if (CheckWin(currentPlayer))
                 {
                     Console.Clear();
@@ -440,7 +427,6 @@ namespace Ludo.Game
                     break;
                 }
 
-                // Aturan bonus giliran
                 if (roll == 6 || gotBonusTurn)
                 {
                     Console.WriteLine("Kamu dapat bonus giliran!");
@@ -544,11 +530,10 @@ namespace Ludo.Game
         public bool CaptureIfExists(IPlayer currentPlayer, Position currentPosition)
         {
             bool captured = false;
-            // Hanya cek jika posisi tidak berada di Safe Zone
             ZoneType zoneType = _board.GetZoneType(currentPosition.X, currentPosition.Y);
             if (zoneType == ZoneType.SafeZone)
             {
-                return false; // Tidak bisa menangkap di safe zone
+                return false;
             }
 
             foreach (var otherPlayer in _players)
@@ -564,7 +549,6 @@ namespace Ludo.Game
                             {
                                 if (otherPath[otherPiece.StepIndex].Equals(currentPosition))
                                 {
-                                    // Kumpulkan bidak lawan kembali ke base
                                     ReturnPieceToBase(otherPiece);
                                     Console.WriteLine($"Bidak {ColorToString(otherPiece.PieceColor)} milik {otherPlayer.Name} kembali ke base!");
                                     captured = true;
@@ -580,7 +564,6 @@ namespace Ludo.Game
         {
             piece.State = PieceState.AtBase;
             piece.StepIndex = -1;
-            // Cari slot base yang kosong
             for (int i = 0; i < 4; i++)
             {
                 if (!_playerPieces[piece.PlayerOwner].Any(p => p.BaseIndex == i))
