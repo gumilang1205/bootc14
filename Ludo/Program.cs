@@ -16,6 +16,8 @@ class Program
         IBoard board = new Board();
 
         GameController controller = new GameController(player1, player2, player3, player4, dice, board);
+        Display display = new Display(controller);
+        //display.Start();
 
         controller.OnGameStart += () => Console.WriteLine("Selamat datang di permainan Ludo!");
         controller.StartGame();
