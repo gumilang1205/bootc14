@@ -57,9 +57,9 @@ namespace Ludo.Game
             _homeEntryPoints = new Dictionary<LudoColor, Position>
             {
                 [LudoColor.Red] = new Position(7, 0),
-                [LudoColor.Red] = new Position(14, 7),
-                [LudoColor.Red] = new Position(7, 14),
-                [LudoColor.Red] = new Position(0, 7),
+                [LudoColor.Yellow] = new Position(14, 7),
+                [LudoColor.Green] = new Position(7, 14),
+                [LudoColor.Blue] = new Position(0, 7),
             };
             _currentTurnIndex = 0;
             InitializePath();
@@ -85,7 +85,6 @@ namespace Ludo.Game
 
         public void InitializePath()
         {
-            //CommonPath = 52 langkah keliling papan
             var universalCommonPath = new List<Position>();
             for (int y = 1; y <= 5; y++) universalCommonPath.Add(new Position(6, y));
             for (int x = 5; x >= 0; x--) universalCommonPath.Add(new Position(x, 6));
@@ -452,16 +451,6 @@ namespace Ludo.Game
         {
             _currentTurnIndex = (_currentTurnIndex + 1) % _players.Count;
         }
-        public ZoneType GetZoneTypePiece(IPiece piece)
-        {
-            var path = GetPathForPlayer(piece.PieceColor);
-            if (piece.StepIndex >= 0 && piece.StepIndex < path.Count) ;
-            {
-                var position = path[piece.StepIndex];
-                return _zoneMap[position];
-            }
-            return ZoneType.Empty;
-        }
         public bool CanMove(IPiece piece, int roll)
         {
             if (piece.State == PieceState.AtBase)
@@ -573,10 +562,6 @@ namespace Ludo.Game
                 }
             }
         }
-        public bool CanEnterFromBase(IPiece piece, int roll)
-        {
-            return roll == 6 && piece.State == PieceState.AtBase;
-        }
         private string ColorToString(LudoColor color)
         {
             return color.ToString();
@@ -594,10 +579,6 @@ namespace Ludo.Game
             }
 
             return new List<Position>();
-        }
-        public int GetPiecePathIndex(IPiece piece)
-        {
-            return piece.StepIndex;
         }
 
     }
