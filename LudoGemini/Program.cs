@@ -9,20 +9,35 @@ class Program
     static void Main(string[] args)
     {
         // Inisialisasi pemain
-        Player player1 = new Player("Andi", LudoColor.Red);
-        Player player2 = new Player("Bobi", LudoColor.Yellow);
-        Player player3 = new Player("Cica", LudoColor.Green);
-        Player player4 = new Player("Duda", LudoColor.Blue);
-
+        // Player player1 = new Player("Andi", LudoColor.Red);
+        // Player player2 = new Player("Bobi", LudoColor.Yellow);
+        // Player player3 = new Player("Cica", LudoColor.Green);
+        // Player player4 = new Player("Duda", LudoColor.Blue);
+        Console.WriteLine("Selamat datang di permainan Ludo!");
+        Console.Write("Masukkan jumlah poemain (2-4) :");
+        int playerCount;
+        while (!int.TryParse(Console.ReadLine(), out playerCount) || playerCount < 2 || playerCount > 4)
+        {
+            Console.Write("Jumlah pemain tidak valid. Masukkan angka antara 2-4:");
+        }
+        List<IPlayer> players = new List<IPlayer>();
+        List<LudoColor> availableColors = new List<LudoColor> { LudoColor.Red, LudoColor.Yellow, LudoColor.Green, LudoColor.Blue };
+        for (int i = 0; i < playerCount; i++)
+        {
+            Console.Write($"Masukkan nama pemain {i + 1} :");
+            string playerName = Console.ReadLine();
+            LudoColor playerColor = availableColors[i];
+            players.Add(new Player(playerName, playerColor));
+}
         // Inisialisasi dadu dan papan
         IDice dice = new Dice();
         IBoard board = new Board();
 
         // Inisialisasi game controller
-        GameController controller = new GameController(player1, player2, player3, player4, dice, board);
+        GameController controller = new GameController(players, dice, board);
 
         // Event handler untuk game start
-        controller.OnGameStart += () => Console.WriteLine("Selamat datang di permainan Ludo!");
+        //controller.OnGameStart += () => Console.WriteLine("Selamat datang di permainan Ludo!");
 
         // Memulai permainan
         controller.StartGame();
@@ -270,9 +285,9 @@ public class GameController
 
     public event Action OnGameStart;
 
-    public GameController(IPlayer player1, IPlayer player2, IPlayer player3, IPlayer player4, IDice dice, IBoard board)
+    public GameController(List<IPlayer> players, IDice dice, IBoard board)
     {
-        _players = new List<IPlayer> { player1, player2, player3, player4 };
+        _players = players;
         _dice = dice;
         _board = board; // Board diinjeksi ke GameController
 

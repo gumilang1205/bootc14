@@ -1,6 +1,7 @@
 using System;
 using Ludo.Enum;
 using Ludo.interfaceX;
+using Ludo.Game;
 
 namespace Ludo.Game
 {
@@ -16,19 +17,17 @@ namespace Ludo.Game
         private List<IPlayer> _players;
         private IBoard _board;
         private int _currentTurnIndex;
-        public event Action OnGameStart;
+        public event Action<string> OnLogMessage;
 
 
-        public GameController(IPlayer player1, IPlayer player2, IPlayer player3, IPlayer player4, IDice dice, IBoard board)
+        public GameController(List<IPlayer> players, IDice dice, IBoard board)
         {
-            _players = new List<IPlayer> { player1, player2, player3, player4 };
             _dice = dice;
             _board = board;
-
+            _players = players;
             _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
             _playerPaths = new Dictionary<LudoColor, List<Position>>();
             _zoneMap = new Dictionary<Position, ZoneType>();
-
             _basePositions = new Dictionary<LudoColor, List<Position>>
             {
                 [LudoColor.Red] = new List<Position>
@@ -106,7 +105,7 @@ namespace Ludo.Game
 
             if (universalCommonPath.Count != 52)
             {
-                Console.WriteLine($"WARNING: Common path has {universalCommonPath.Count} steps, expected 52!");
+                OnLogMessage?.Invoke($"WARNING: Common path has {universalCommonPath.Count} steps, expected 52!");
             }
 
             var redHome = new List<Position>();
@@ -122,9 +121,9 @@ namespace Ludo.Game
             for (int x = 1; x <= 6; x++) blueHome.Add(new Position(x, 7));
 
             _playerPaths[LudoColor.Red] = CreatePlayerPath(universalCommonPath, LudoColor.Red, redHome);
-            _playerPaths[LudoColor.Green] = CreatePlayerPath(universalCommonPath, LudoColor.Red, greenHome);
-            _playerPaths[LudoColor.Yellow] = CreatePlayerPath(universalCommonPath, LudoColor.Red, yellowHome);
-            _playerPaths[LudoColor.Blue] = CreatePlayerPath(universalCommonPath, LudoColor.Red, blueHome);
+            _playerPaths[LudoColor.Green] = CreatePlayerPath(universalCommonPath, LudoColor.Green, greenHome);
+            _playerPaths[LudoColor.Yellow] = CreatePlayerPath(universalCommonPath, LudoColor.Yellow, yellowHome);
+            _playerPaths[LudoColor.Blue] = CreatePlayerPath(universalCommonPath, LudoColor.Blue, blueHome);
         }
         private List<Position> CreatePlayerPath(List<Position> commonPath, LudoColor color, List<Position> homePath)
         {
@@ -135,7 +134,7 @@ namespace Ludo.Game
             int startIndex = commonPath.IndexOf(startPoint);
             if (startIndex == -1)
             {
-                Console.WriteLine($"Error: Start point {startPoint.X},{startPoint.Y} for {color} not found in common path.");
+                OnLogMessage?.Invoke($"Error: Start point {startPoint.X},{startPoint.Y} for {color} not found in common path.");
                 return new List<Position>();
             }
             int stepsAdded = 0;
@@ -149,7 +148,7 @@ namespace Ludo.Game
                 {
                     if (stepsAdded != 51)
                     {
-                        Console.WriteLine($"WARNING: Player {color} common path before home entry has {stepsAdded} steps, expected 51!");
+                        OnLogMessage?.Invoke($"WARNING: Player {color} common path before home entry has {stepsAdded} steps, expected 51!");
                     }
                     break;
                 }
@@ -187,158 +186,6 @@ namespace Ludo.Game
             return GetZoneType(x, y) == ZoneType.BlockedPath;
         }
 
-        public void StartGame()
-        {
-            OnGameStart?.Invoke();
-
-            bool gameOver = false;
-            while (!gameOver)
-            {
-                Console.Clear();
-                DrawBoard();
-
-                var currentPlayer = GetCurrentPlayer();
-                Console.WriteLine($"\nGiliran: {currentPlayer.Name} ({ColorToString(currentPlayer.Color)})");
-
-                Console.WriteLine("Tekan ENTER untuk melempar dadu...");
-                Console.ReadLine();
-                int roll = RollDice();
-                Console.WriteLine($"Kamu melempar: {roll}");
-
-                bool movedPiece = false;
-                bool gotBonusTurn = false;
-
-                var pieces = _playerPieces[currentPlayer];
-                var activePieces = pieces.Where(p => p.State == PieceState.Active).ToList();
-                var atBasePieces = pieces.Where(p => p.State == PieceState.AtBase).ToList();
-
-                List<IPiece> movablePieces = new List<IPiece>();
-
-                if (roll == 6 && atBasePieces.Any())
-                {
-                    Console.WriteLine("Pilihan pergerakan:");
-                    Console.WriteLine($"1. Keluarkan bidak dari Base (Bidak {ColorToString(atBasePieces.First().PieceColor)} pertama)");
-
-                    int optionCounter = 2;
-                    foreach (var piece in activePieces)
-                    {
-                        if (CanMove(piece, roll))
-                        {
-                            movablePieces.Add(piece);
-                            Console.WriteLine($"{optionCounter}. Pindahkan bidak {ColorToString(piece.PieceColor)} di langkah {piece.StepIndex + 1}");
-                            optionCounter++;
-                        }
-                    }
-
-                    int choice = -1;
-                    while (choice == -1)
-                    {
-                        Console.Write("Masukkan nomor pilihan: ");
-                        if (int.TryParse(Console.ReadLine(), out int input))
-                        {
-                            if (input == 1)
-                            {
-                                var chosenPiece = atBasePieces.First();
-                                MovePieceFromBase(chosenPiece);
-                                Console.WriteLine($"Bidak {ColorToString(chosenPiece.PieceColor)} keluar dari base ke titik start.");
-                                movedPiece = true;
-                                gotBonusTurn = true;
-                                break;
-                            }
-                            else if (input > 1 && input <= movablePieces.Count + 1)
-                            {
-                                var chosenPiece = movablePieces[input - 2];
-                                if (MovePiece(chosenPiece, roll))
-                                {
-                                    movedPiece = true;
-                                    if (chosenPiece.State == PieceState.Active)
-                                    {
-                                        var currentPos = GetPathForPlayer(chosenPiece.PieceColor)[chosenPiece.StepIndex];
-                                        gotBonusTurn = CaptureIfExists(currentPlayer, currentPos);
-                                    }
-                                }
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Pilihan tidak valid. Silakan coba lagi.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Masukan tidak valid. Harap masukkan angka.");
-                        }
-                    }
-                }
-                else
-                {
-                    movablePieces.AddRange(activePieces.Where(p => CanMove(p, roll)));
-
-                    if (!movablePieces.Any())
-                    {
-                        Console.WriteLine("Tidak ada bidak yang bisa digerakkan. Giliran dilewati.");
-                        NextTurn();
-                        Console.WriteLine("\nTekan ENTER untuk lanjut...");
-                        Console.ReadLine();
-                        continue;
-                    }
-
-                    Console.WriteLine("Pilih bidak yang akan digerakkan:");
-                    for (int i = 0; i < movablePieces.Count; i++)
-                    {
-                        string pieceStatus = movablePieces[i].State == PieceState.AtBase ? "di Base" : $"di langkah {movablePieces[i].StepIndex + 1}";
-                        Console.WriteLine($"{i + 1}. Bidak {ColorToString(movablePieces[i].PieceColor)} {pieceStatus}");
-                    }
-
-                    int choiceIndex = -1;
-                    while (choiceIndex == -1)
-                    {
-                        Console.Write("Masukkan nomor bidak: ");
-                        if (int.TryParse(Console.ReadLine(), out int input) && input >= 1 && input <= movablePieces.Count)
-                        {
-                            choiceIndex = input - 1;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Pilihan tidak valid. Silakan coba lagi.");
-                        }
-                    }
-
-                    var chosenPiece = movablePieces[choiceIndex];
-
-                    if (MovePiece(chosenPiece, roll))
-                    {
-                        movedPiece = true;
-                        if (chosenPiece.State == PieceState.Active)
-                        {
-                            var currentPos = GetPathForPlayer(chosenPiece.PieceColor)[chosenPiece.StepIndex];
-                            gotBonusTurn = CaptureIfExists(currentPlayer, currentPos);
-                        }
-                    }
-                }
-
-                if (CheckWin(currentPlayer))
-                {
-                    Console.Clear();
-                    DrawBoard();
-                    Console.WriteLine($"\n=== SELAMAT! {currentPlayer.Name} MENANG!!! ===");
-                    gameOver = true;
-                    break;
-                }
-
-                if (roll == 6 || gotBonusTurn)
-                {
-                    Console.WriteLine("Kamu dapat bonus giliran!");
-                }
-                else
-                {
-                    NextTurn();
-                }
-
-                Console.WriteLine("\nTekan ENTER untuk lanjut...");
-                Console.ReadLine();
-            }
-        }
         public int RollDice()
         {
             return _dice.Roll();
@@ -361,7 +208,7 @@ namespace Ludo.Game
             return piece.StepIndex + roll < path.Count;
 
         }
-        private bool MovePiece(IPiece piece, int roll)
+        public bool MovePiece(IPiece piece, int roll)
         {
             if (piece.State == PieceState.AtBase)
             {
@@ -380,23 +227,23 @@ namespace Ludo.Game
             {
                 piece.StepIndex = newStepIndex;
                 piece.State = PieceState.Home;
-                Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} mendarat di Home Point!");
+                OnLogMessage?.Invoke($"Bidak {ColorToString(piece.PieceColor)} mendarat di Home Point!");
                 return true;
             }
             else if (newStepIndex >= path.Count)
             {
-                Console.WriteLine($"Langkah {roll} terlalu banyak. Bidak tidak bisa digerakkan.");
+                OnLogMessage?.Invoke($"Langkah {roll} terlalu banyak. Bidak tidak bisa digerakkan.");
                 return false;
             }
             else
             {
                 piece.StepIndex = newStepIndex;
-                Console.WriteLine($"Bidak {ColorToString(piece.PieceColor)} pindah ke langkah {piece.StepIndex + 1}.");
+                OnLogMessage?.Invoke($"Bidak {ColorToString(piece.PieceColor)} pindah ke langkah {piece.StepIndex + 1}.");
                 return true;
             }
         }
 
-        private void MovePieceFromBase(IPiece piece)
+        public void MovePieceFromBase(IPiece piece)
         {
             var startPoint = _startPoints[piece.PieceColor];
             var path = GetPathForPlayer(piece.PieceColor);
@@ -404,7 +251,7 @@ namespace Ludo.Game
             int startIndex = path.IndexOf(startPoint);
             if (startIndex == -1)
             {
-                Console.WriteLine("Error: Start point tidak ditemukan di jalur pemain.");
+                OnLogMessage?.Invoke("Error: Start point tidak ditemukan di jalur pemain.");
                 return;
             }
 
@@ -439,7 +286,7 @@ namespace Ludo.Game
                                 if (otherPath[otherPiece.StepIndex].Equals(currentPosition))
                                 {
                                     ReturnPieceToBase(otherPiece);
-                                    Console.WriteLine($"Bidak {ColorToString(otherPiece.PieceColor)} milik {otherPlayer.Name} kembali ke base!");
+                                    OnLogMessage?.Invoke($"Bidak {ColorToString(otherPiece.PieceColor)} milik {otherPlayer.Name} kembali ke base!");
                                     captured = true;
                                 }
                             }
@@ -462,12 +309,12 @@ namespace Ludo.Game
                 }
             }
         }
-        private string ColorToString(LudoColor color)
+        public string ColorToString(LudoColor color)
         {
             return color.ToString();
         }
 
-        private char GetPieceChar(LudoColor color)
+        public char GetPieceChar(LudoColor color)
         {
             return color.ToString()[0];
         }
@@ -481,6 +328,23 @@ namespace Ludo.Game
             return new List<Position>();
         }
 
+        public Dictionary<IPlayer, List<IPiece>> GetPlayerPieces
+        {
+            get { return _playerPieces; }
+        }
+
+        public IBoard GetBoard()
+        {
+            return _board;
+        }
+
+        public Dictionary<LudoColor, List<Position>> GetBasePositions
+        {
+            get { return _basePositions; }
+        }
+
     }
+
+
 }
 
