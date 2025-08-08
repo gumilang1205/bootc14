@@ -28,7 +28,7 @@ namespace Ludo.Game
             _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
             _playerPaths = new Dictionary<LudoColor, List<Position>>();
             _zoneMap = new Dictionary<Position, ZoneType>();
-            _basePositions = new Dictionary<LudoColor, List<Position>>
+            _basePositions = new Dictionary<LudoColor, List<Position>> 
             {
                 [LudoColor.Red] = new List<Position>
                     {
@@ -46,21 +46,21 @@ namespace Ludo.Game
                     {
                         new Position(2, 11), new Position(2, 12), new Position(3, 11), new Position(3, 12)
                     }
-            };
-            _startPoints = new Dictionary<LudoColor, Position>
+            }; 
+            _startPoints = new Dictionary<LudoColor, Position> 
             {
                 [LudoColor.Red] = new Position(6, 1),
                 [LudoColor.Yellow] = new Position(13, 6),
                 [LudoColor.Green] = new Position(8, 13),
                 [LudoColor.Blue] = new Position(1, 8)
-            };
-            _homeEntryPoints = new Dictionary<LudoColor, Position>
+            }; 
+            _homeEntryPoints = new Dictionary<LudoColor, Position> 
             {
                 [LudoColor.Red] = new Position(7, 0),
                 [LudoColor.Yellow] = new Position(14, 7),
                 [LudoColor.Green] = new Position(7, 14),
                 [LudoColor.Blue] = new Position(0, 7),
-            };
+            }; 
             _currentTurnIndex = 0;
             InitializePath();
             InitializePiece();
@@ -179,7 +179,7 @@ namespace Ludo.Game
         public bool IsSafeZone(int x, int y)
         {
             var zone = GetZoneType(x, y);
-            return zone == ZoneType.SafeZone || zone == ZoneType.StartPoint || zone == ZoneType.HomePath;
+            return zone == ZoneType.SafeZone || zone == ZoneType.StartPoint || zone == ZoneType.HomePath; 
         }
         public bool IsBlocked(int x, int y)
         {
@@ -227,7 +227,7 @@ namespace Ludo.Game
             {
                 piece.StepIndex = newStepIndex;
                 piece.State = PieceState.Home;
-                OnLogMessage?.Invoke($"Bidak {ColorToString(piece.PieceColor)} mendarat di Home Point!");
+                OnLogMessage?.Invoke($"Bidak {ColorToString(piece.PieceColor)} mendarat di Home Point!"); 
                 return true;
             }
             else if (newStepIndex >= path.Count)

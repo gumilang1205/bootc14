@@ -36,7 +36,7 @@ namespace Ludo.Game
 
                 List<IPiece> movablePieces = new List<IPiece>();
 
-                if (roll == 6 && atBasePieces.Any())
+                if (roll == 6 && atBasePieces.Any()) 
                 {
                     Console.WriteLine("Pilihan pergerakan:");
                     Console.WriteLine($"1. Keluarkan bidak dari Base (Bidak {_gameController.ColorToString(atBasePieces.First().PieceColor)} pertama)");
@@ -52,8 +52,8 @@ namespace Ludo.Game
                         }
                     }
 
-                    int choice = -1;
-                    while (choice == -1)
+                    int choice = -1; 
+                    while (choice == -1) 
                     {
                         Console.Write("Masukkan nomor pilihan: ");
                         if (int.TryParse(Console.ReadLine(), out int input))
@@ -92,7 +92,7 @@ namespace Ludo.Game
                         }
                     }
                 }
-                else
+                else 
                 {
                     movablePieces.AddRange(activePieces.Where(p => _gameController.CanMove(p, roll)));
 
@@ -186,7 +186,7 @@ namespace Ludo.Game
                     }
                 }
             }
-            foreach (var kvp in _gameController.GetPlayerPieces)
+            foreach (var kvp in _gameController.GetPlayerPieces) 
             {
                 var pieces = kvp.Value;
 
