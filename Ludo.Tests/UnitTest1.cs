@@ -9,16 +9,15 @@ public class Ludo_IsLudoShould
     private GameController _game;
     private IBoard _board;
     private IDice _dice;
-    private List<IPlayer> _player;
     [SetUp]
     public void Setup()
     {
         _board = new Board();
         _dice = new Dice();
-        _game = new GameController(player, _dice, _board);
         var player1 = new Player("a", Enum.LudoColor.Blue);
         var player2 = new Player("b", Enum.LudoColor.Red);
         List<IPlayer> players = [player1, player2];
+        _game = new GameController(players, _dice, _board);
         // var game = new GameController(players, _dice, _board);
 
 
