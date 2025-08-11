@@ -22,7 +22,7 @@ public class Ludo_IsLudoShould
     }
 
     [Test]
-    public void IsSafeZone_Input_ReturnTrue()
+    public void IsSafeZone_Input_ReturnFalse()
     {
         var result = _game.IsSafeZone(1, 2);
         Assert.That(result, Is.False);
@@ -32,5 +32,19 @@ public class Ludo_IsLudoShould
     {
         var result1 = _game.IsBlocked(1, 2);
         Assert.That(result1, Is.False);
+    }
+    [TestCase(6, 1)]
+    [TestCase(13, 6)]
+    [TestCase(8, 13)]
+    [TestCase(1, 8)]
+    [TestCase(2, 6)]
+    [TestCase(6, 12)]
+    [TestCase(12, 8)]
+    [TestCase(8, 2)]
+
+    public void IsSafeZone_Input_ReturnTrue(int valueX, int valueY)
+    {
+        var result2 = _game.IsSafeZone(valueX, valueY);
+        Assert.That(result2, Is.True);
     }
 }
