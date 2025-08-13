@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHandler", "EventHandle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TugasKedua", "TugasKedua\TugasKedua.csproj", "{B185C966-56AB-499A-BFAA-C6F476FFAA3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkFundamental", "FrameworkFundamental\FrameworkFundamental.csproj", "{BB46D5E8-653A-42C7-9782-530559E8E8C2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDomino", "GameDomino\GameDomino.csproj", "{874752A9-1AA3-4E5F-8ABD-5A2D9074B245}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDomino2", "GameDomino2\GameDomino2.csproj", "{CE11D57B-65DC-438F-B031-6C03D1C97A51}"
@@ -52,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity Framework Demo", "Entity Framework Demo\Entity Framework Demo.csproj", "{B6E7FFDE-035B-4F7D-AD52-EA98FA07DC42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity Framework", "Entity Framework\Entity Framework.csproj", "{9241CA3E-A1C7-4BCE-8F51-D0D28FAFFBA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPIFaculty", "WebAPIFaculty\WebAPIFaculty.csproj", "{74CAD965-F58A-4BB6-A8F1-482BA4B5C9C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -178,5 +178,9 @@ Global
 		{9241CA3E-A1C7-4BCE-8F51-D0D28FAFFBA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9241CA3E-A1C7-4BCE-8F51-D0D28FAFFBA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9241CA3E-A1C7-4BCE-8F51-D0D28FAFFBA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74CAD965-F58A-4BB6-A8F1-482BA4B5C9C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74CAD965-F58A-4BB6-A8F1-482BA4B5C9C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74CAD965-F58A-4BB6-A8F1-482BA4B5C9C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74CAD965-F58A-4BB6-A8F1-482BA4B5C9C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

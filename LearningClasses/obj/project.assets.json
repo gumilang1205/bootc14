@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\SE-97\\.nuget\\packages\\": {}
+    "C:\\Users\\mp25e\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\SE-97\\Documents\\GitHub\\bootc14\\LearningClasses\\LearningClasses.csproj",
+      "projectUniqueName": "D:\\Git\\bootc14\\LearningClasses\\LearningClasses.csproj",
       "projectName": "LearningClasses",
-      "projectPath": "C:\\Users\\SE-97\\Documents\\GitHub\\bootc14\\LearningClasses\\LearningClasses.csproj",
-      "packagesPath": "C:\\Users\\SE-97\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\SE-97\\Documents\\GitHub\\bootc14\\LearningClasses\\obj\\",
+      "projectPath": "D:\\Git\\bootc14\\LearningClasses\\LearningClasses.csproj",
+      "packagesPath": "C:\\Users\\mp25e\\.nuget\\packages\\",
+      "outputPath": "D:\\Git\\bootc14\\LearningClasses\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\SE-97\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\mp25e\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
