@@ -7,6 +7,13 @@ using FluentValidation.AspNetCore;
 using StudentManagement.Validator;
 using StudentManagement.DTOs;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
+using StudentManagement;
+using StudentManagement.Services;
+using StudentManagement.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,52 @@ builder.Services.AddTransient<IValidator<StudentDto>, StudentValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
+// Configure Microsoft Identity
+builder.Services.AddIdentity<Student, IdentityRole>(options =>
+{
+    // Password requirements
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+
+    // Lockout settings - protect against brute force attacks
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ??
+                throw new InvalidOperationException("JWT SecretKey not configured"))),
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Register custom services
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 // Add controllers with JSON options configuration
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
