@@ -39,7 +39,8 @@ namespace StudentManagement.Service
             if (student == null) return false;
             await _studentRepository.AddStudentAsync(student);
 
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UpdateStudentAsync(int id, StudentDto studentDto)
@@ -48,7 +49,8 @@ namespace StudentManagement.Service
             if (student == null) return false;
             _mapper.Map(studentDto, student);
             await _studentRepository.UpdateStudentAsync(student);
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteStudentAsync(int id)
@@ -56,7 +58,8 @@ namespace StudentManagement.Service
             var student = await _studentRepository.GetStudentByIdAsync(id);
             if (student == null) return false;
             await _studentRepository.DeleteStudentAsync(id);
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

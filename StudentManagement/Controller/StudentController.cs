@@ -61,7 +61,7 @@ namespace StudentManagement.Controllers
             {
                 return NotFound($"Student with ID {id} not found.");
             }
-            return NoContent();
+            return Ok("Successfully update the student.");
         }
         [Route("{id}")]
         [HttpDelete]
@@ -72,7 +72,7 @@ namespace StudentManagement.Controllers
             {
                 return NotFound($"Student with ID {id} not found.");
             }
-            return NoContent();
+            return Ok("Successfully deleted the student.");
         }
 
     }
