@@ -3,6 +3,10 @@ using StudentManagement.Data;
 using StudentManagement.Repositories;
 using StudentManagement.Service;
 using StudentManagement.Mapping;
+using FluentValidation.AspNetCore;
+using StudentManagement.Validator;
+using StudentManagement.DTOs;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddAutoMapper(typeof(StudentMappingProfile));
+builder.Services.AddTransient<IValidator<StudentDto>, StudentValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 // Add controllers with JSON options configuration
 builder.Services.AddControllers()
