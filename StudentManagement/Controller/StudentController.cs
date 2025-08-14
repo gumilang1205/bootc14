@@ -47,6 +47,7 @@ namespace StudentManagement.Controllers
                 return StatusCode(500, "An error occurred while creating the student.");
             }
             return CreatedAtAction(nameof(GetStudentById), new { id = studentDto.Id }, studentDto);
+            return Ok("Successfully created the student.");
         }
         [Route("{id}")]
         [HttpPut]
