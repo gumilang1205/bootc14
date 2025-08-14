@@ -1,4 +1,4 @@
-namespace WebAPIFaculty.Models
+namespace StudentManagement.Models
 {
     public class Student
     {

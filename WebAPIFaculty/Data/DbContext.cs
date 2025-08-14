@@ -4,6 +4,12 @@ namespace WebAPIFaculty.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Student> Students { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -13,13 +19,13 @@ namespace WebAPIFaculty.Data
         }
         // public DbSet<Faculty> Faculties { get; set; }
         // public DbSet<Course> Courses { get; set; }
-        public DbSet<Student> Students { get; set; }
+        
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // modelBuilder.Entity<Faculty>().ToTable("Faculties");
-            // modelBuilder.Entity<Course>().ToTable("Courses");
-            modelBuilder.Entity<Student>().ToTable("Students");
-        }
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     // modelBuilder.Entity<Faculty>().ToTable("Faculties");
+        //     // modelBuilder.Entity<Course>().ToTable("Courses");
+        //     modelBuilder.Entity<Student>().ToTable("Students");
+        // }
     }
 }

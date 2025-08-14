@@ -1,10 +1,9 @@
-using WebAPIFaculty.Data;
-using WebAPIFaculty.Models;
-using WebAPIFaculty.DTOs;
+using StudentManagement.Data;
+using StudentManagement.DTOs;
+using StudentManagement.Models;
+using StudentManagement.Repositories;
 using AutoMapper;
-using WebAPIFaculty.Repositories;
-using Microsoft.EntityFrameworkCore;
-namespace WebAPIFaculty.Service
+namespace StudentManagement.Service
 {
     public class StudentService : IStudentService
     {
@@ -36,8 +35,10 @@ namespace WebAPIFaculty.Service
         public async Task<bool> CreateStudentAsync(StudentDto studentDto)
         {
             var student = _mapper.Map<Student>(studentDto);
+
             if (student == null) return false;
             await _studentRepository.AddStudentAsync(student);
+
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -46,7 +47,7 @@ namespace WebAPIFaculty.Service
             var student = await _studentRepository.GetStudentByIdAsync(id);
             if (student == null) return false;
             _mapper.Map(studentDto, student);
-            _studentRepository.UpdateStudentAsync(student);
+            await _studentRepository.UpdateStudentAsync(student);
             return await _context.SaveChangesAsync() > 0;
         }
 

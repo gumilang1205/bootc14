@@ -1,8 +1,7 @@
-namespace WebAPIFaculty.DTOs
+namespace StudentManagement.DTOs
 {
-    public class StudentDto
+    public class StudentCreateDto
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
     }

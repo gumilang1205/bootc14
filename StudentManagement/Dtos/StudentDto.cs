@@ -1,4 +1,4 @@
-namespace WebAPIFaculty.DTOs
+namespace StudentManagement.DTOs
 {
     public class StudentDto
     {

@@ -1,7 +1,7 @@
 using AutoMapper;
-using WebAPIFaculty.DTOs;
-using WebAPIFaculty.Models;
-namespace WebAPIFaculty.Mapping
+using StudentManagement.DTOs;
+using StudentManagement.Models;
+namespace StudentManagement.Mapping
 {
     public class StudentMappingProfile : Profile
     {
