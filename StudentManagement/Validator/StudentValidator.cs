@@ -48,7 +48,7 @@ namespace StudentManagement.Validator
         {
             if (string.IsNullOrEmpty(email))
                 return false;
-                
+
             return email.EndsWith("@university.edu", StringComparison.OrdinalIgnoreCase);
         }
     }
