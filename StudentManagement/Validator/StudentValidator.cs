@@ -1,5 +1,5 @@
 using FluentValidation;
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
 using StudentManagement.Models;
 
 namespace StudentManagement.Validator

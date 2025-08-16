@@ -1,4 +1,4 @@
-namespace StudentManagement.DTOs
+namespace StudentManagement.Dtos
 {
     public class StudentDto
     {

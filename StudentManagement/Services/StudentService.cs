@@ -1,5 +1,5 @@
 using StudentManagement.Data;
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
 using StudentManagement.Models;
 using StudentManagement.Repositories;
 using AutoMapper;

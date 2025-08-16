@@ -1,4 +1,4 @@
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
 namespace StudentManagement.Service;
 
 public interface IStudentService

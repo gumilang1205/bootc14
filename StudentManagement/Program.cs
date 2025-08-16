@@ -5,8 +5,10 @@ using StudentManagement.Service;
 using StudentManagement.Mapping;
 using FluentValidation.AspNetCore;
 using StudentManagement.Validator;
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,7 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddAutoMapper(typeof(StudentMappingProfile));
 builder.Services.AddTransient<IValidator<StudentCreateDto>, StudentValidator>();
+builder.Services.AddAuthorization();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
@@ -33,6 +36,20 @@ builder.Services.AddControllers()
         // Use camelCase for property names in JSON responses
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]!))
+    };
+});
 
 // Configure API documentation with Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -43,6 +60,28 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Product Catalog API",
         Version = "v1",
         Description = "A comprehensive ASP.NET Core Web API demonstrating REST principles, Entity Framework, and clean architecture patterns."
+    });
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Please enter a valid JWT token",
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
     });
 });
 
@@ -86,6 +125,8 @@ app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
 // Enable authorization (even though we're not using authentication in this demo)
+//middleware otentikkasi dan otorisasi
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Map controller routes

@@ -1,5 +1,5 @@
 using AutoMapper;
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
 using StudentManagement.Models;
 namespace StudentManagement.Mapping
 {

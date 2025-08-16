@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using StudentManagement.Service;
-using StudentManagement.DTOs;
+using StudentManagement.Dtos;
+using Microsoft.AspNetCore.Authorization;
 namespace StudentManagement.Controllers
 {
+    [Authorize]
     [Route("api/Students")]
     [ApiController]
     public class StudentController : Controller
@@ -34,6 +36,7 @@ namespace StudentManagement.Controllers
             }
             return Ok(student);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateStudent([FromBody] StudentCreateDto studentDto)
         {
@@ -47,8 +50,8 @@ namespace StudentManagement.Controllers
                 return StatusCode(500, "An error occurred while creating the student.");
             }
             return CreatedAtAction(nameof(GetStudentById), new { id = createdStudentDto.Id }, createdStudentDto);
-
         }
+        [Authorize(Roles = "Admin")]
         [Route("{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateStudent(int id, [FromBody] StudentDto studentDto)
@@ -70,6 +73,7 @@ namespace StudentManagement.Controllers
 
             return NoContent(); // 204 No Content is more appropriate for updatess
         }
+        [Authorize(Roles = "Admin")]
         [Route("{id}")]
         [HttpDelete]
         public async Task<IActionResult> DeleteStudent(int id)
