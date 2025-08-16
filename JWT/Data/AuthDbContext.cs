@@ -1,7 +1,5 @@
 using JWT.Dtos;
 using JWT.Models;
-
-;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,8 +32,8 @@ namespace JWT.Data
             });
 
             // Seed default roles
-            var adminRoleId = Guid.NewGuid().ToString();
-            var userRoleId = Guid.NewGuid().ToString();
+            var adminRoleId = "123";
+            var userRoleId = "1234";
 
             builder.Entity<Role>().HasData(
                 new Role
@@ -44,7 +42,7 @@ namespace JWT.Data
                     Name = "Admin",
                     NormalizedName = "ADMIN",
                     Description = "Administrator with full access",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2024, 1, 1)
                 },
                 new Role
                 {
@@ -52,7 +50,7 @@ namespace JWT.Data
                     Name = "User",
                     NormalizedName = "USER",
                     Description = "Regular user with limited access",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2024, 1, 1)
                 }
             );
         }

@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddAutoMapper(typeof(StudentMappingProfile));
-builder.Services.AddTransient<IValidator<StudentDto>, StudentValidator>();
+builder.Services.AddTransient<IValidator<StudentCreateDto>, StudentValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 

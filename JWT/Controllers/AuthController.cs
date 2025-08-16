@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using JWT.Dtos;
 using JWT.Models;
 using JWT.Services;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace JWT.Controllers
 {
@@ -16,17 +17,17 @@ namespace JWT.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IJwtTokenService _tokenService;
+        private readonly ITokenService _tokenService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             RoleManager<IdentityRole> roleManager,
-            IJwtTokenService tokenService,
+            ITokenService tokenService,
             ILogger<AuthController> logger)
         {
             _userManager = userManager;
@@ -41,7 +42,7 @@ namespace JWT.Controllers
         /// This is like signing up for a new account with enterprise-grade security
         /// </summary>
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerDto)
         {
             try
             {
@@ -53,7 +54,7 @@ namespace JWT.Controllers
                 }
 
                 // Create new user with Identity's built-in validation and security
-                var newUser = new ApplicationUser
+                var newUser = new User
                 {
                     UserName = registerDto.Email, // Identity uses UserName for login
                     Email = registerDto.Email,
@@ -96,7 +97,7 @@ namespace JWT.Controllers
         /// This validates credentials and issues JWT tokens with Identity's security features
         /// </summary>
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginDto)
         {
             try
             {
@@ -126,17 +127,17 @@ namespace JWT.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
 
                 // Generate JWT token
-                var token = _tokenService.GenerateToken(user, roles.ToList());
+                var token = await _tokenService.GenerateTokenAsync(user);
 
                 _logger.LogInformation("User {Email} logged in successfully", user.Email);
 
-                return Ok(new AuthResponseDTO
+                return Ok(new AuthResponseDto
                 {
                     Token = token,
-                    Email = user.Email ?? "",
-                    FullName = user.FullName,
-                    Roles = roles.ToList(),
-                    ExpiresAt = DateTime.UtcNow.AddMinutes(60) // Should match token expiration
+                    //Email = user.Email ?? "",
+                    //FullName = user.FullName,
+                    //Roles = roles.ToList(),
+                    //ExpiresAt = DateTime.UtcNow.AddMinutes(60) // Should match token expiration
                 });
             }
             catch (Exception ex)

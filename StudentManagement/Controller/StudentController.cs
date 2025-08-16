@@ -21,7 +21,7 @@ namespace StudentManagement.Controllers
             {
                 return NotFound("No students found.");
             }
-            return Ok(students);
+            return Ok(new List<StudentDto>(students));
         }
         [Route("{id}")]
         [HttpGet]
@@ -35,23 +35,28 @@ namespace StudentManagement.Controllers
             return Ok(student);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateStudent([FromBody] StudentDto studentDto)
+        public async Task<IActionResult> CreateStudent([FromBody] StudentCreateDto studentDto)
         {
-            if (studentDto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid student data.");
+                return BadRequest(ModelState);
             }
-            var result = await _studentService.CreateStudentAsync(studentDto);
-            if (!result)
+            var createdStudentDto = await _studentService.CreateStudentAsync(studentDto);
+            if (createdStudentDto == null)
             {
                 return StatusCode(500, "An error occurred while creating the student.");
             }
-            return CreatedAtAction(nameof(GetStudentById), new { id = studentDto.Id }, studentDto);
+            return CreatedAtAction(nameof(GetStudentById), new { id = createdStudentDto.Id }, createdStudentDto);
+
         }
         [Route("{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateStudent(int id, [FromBody] StudentDto studentDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (studentDto == null || studentDto.Id != id)
             {
                 return BadRequest("Invalid student data.");
@@ -61,7 +66,9 @@ namespace StudentManagement.Controllers
             {
                 return NotFound($"Student with ID {id} not found.");
             }
-            return Ok("Successfully update the student.");
+            //return Ok("Successfully update the student.");
+
+            return NoContent(); // 204 No Content is more appropriate for updatess
         }
         [Route("{id}")]
         [HttpDelete]
@@ -72,7 +79,8 @@ namespace StudentManagement.Controllers
             {
                 return NotFound($"Student with ID {id} not found.");
             }
-            return Ok("Successfully deleted the student.");
+            //return Ok("Successfully deleted the student.");
+            return NoContent(); // 204 No Content is more appropriate for deletions 
         }
 
     }

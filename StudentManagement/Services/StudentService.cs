@@ -7,14 +7,12 @@ namespace StudentManagement.Service
 {
     public class StudentService : IStudentService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IStudentRepository _studentRepository;
 
-        public StudentService(IStudentRepository studentRepository, ApplicationDbContext context, IMapper mapper)
+        public StudentService(IStudentRepository studentRepository, IMapper mapper)
         {
             _studentRepository = studentRepository;
-            _context = context;
             _mapper = mapper;
         }
 
@@ -32,15 +30,16 @@ namespace StudentManagement.Service
             return _mapper.Map<StudentDto>(student);
         }
 
-        public async Task<bool> CreateStudentAsync(StudentDto studentDto)
+        public async Task<StudentDto> CreateStudentAsync(StudentCreateDto studentDto)
         {
             var student = _mapper.Map<Student>(studentDto);
 
-            if (student == null) return false;
-            await _studentRepository.AddStudentAsync(student);
-
-            await _context.SaveChangesAsync();
-            return true;
+            if (student == null)
+            {
+                return null;
+            }
+            var createdStudent = await _studentRepository.AddStudentAsync(student);
+            return _mapper.Map<StudentDto>(createdStudent);
         }
 
         public async Task<bool> UpdateStudentAsync(int id, StudentDto studentDto)
@@ -49,7 +48,6 @@ namespace StudentManagement.Service
             if (student == null) return false;
             _mapper.Map(studentDto, student);
             await _studentRepository.UpdateStudentAsync(student);
-            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -58,7 +56,6 @@ namespace StudentManagement.Service
             var student = await _studentRepository.GetStudentByIdAsync(id);
             if (student == null) return false;
             await _studentRepository.DeleteStudentAsync(id);
-            await _context.SaveChangesAsync();
             return true;
         }
     }

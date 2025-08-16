@@ -8,7 +8,7 @@ namespace StudentManagement.Validator
     /// StudentValidator demonstrates advanced FluentValidation techniques
     /// This replaces all the Data Annotations we removed from the Student model
     /// </summary>
-    public class StudentValidator : AbstractValidator<StudentDto>
+    public class StudentValidator : AbstractValidator<StudentCreateDto>
     {
         /// <summary>
         /// Constructor defining validation rules for Student model

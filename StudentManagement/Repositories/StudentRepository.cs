@@ -23,10 +23,11 @@ namespace StudentManagement.Repositories
             return await _context.Students.FindAsync(id);
         }
 
-        public async Task AddStudentAsync(Student student)
+        public async Task<Student> AddStudentAsync(Student student)
         {
             await _context.Students.AddAsync(student);
             await _context.SaveChangesAsync();
+            return student; // Return the added student with its ID populated
         }
 
         public async Task UpdateStudentAsync(Student student)

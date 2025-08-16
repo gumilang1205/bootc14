@@ -1,4 +1,3 @@
-
 namespace JWT.Dtos
 {
     public class AuthResponseDto
