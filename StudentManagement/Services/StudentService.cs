@@ -33,6 +33,9 @@ namespace StudentManagement.Service
         public async Task<StudentDto> CreateStudentAsync(StudentCreateDto studentDto)
         {
             var student = _mapper.Map<Student>(studentDto);
+            string year = DateTime.Now.Year.ToString();
+            string uniqueId = Guid.NewGuid().ToString().Substring(0, 8);
+            student.StudentNumber = $"ST-{year}-{uniqueId}";
 
             if (student == null)
             {
