@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement", "Studen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWT", "JWT\JWT.csproj", "{B8D23306-3744-4FA4-AA87-3B63F180BC17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserverPattern", "ObserverPattern\ObserverPattern.csproj", "{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -200,5 +202,9 @@ Global
 		{B8D23306-3744-4FA4-AA87-3B63F180BC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8D23306-3744-4FA4-AA87-3B63F180BC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8D23306-3744-4FA4-AA87-3B63F180BC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
