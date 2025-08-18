@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWT", "JWT\JWT.csproj", "{B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserverPattern", "ObserverPattern\ObserverPattern.csproj", "{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeItFail", "MakeItFail\MakeItFail.csproj", "{63DE6425-C93C-411C-8510-87A93D5325EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -206,5 +208,9 @@ Global
 		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47D6E9C7-9EBE-405B-BC94-FA0EAA502C0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63DE6425-C93C-411C-8510-87A93D5325EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DE6425-C93C-411C-8510-87A93D5325EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DE6425-C93C-411C-8510-87A93D5325EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DE6425-C93C-411C-8510-87A93D5325EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
